@@ -20442,9 +20442,8 @@ function renderStep1() {
 function selectRole(r) {
   const wasRole = state.role;
   state.role = r;
-  // When role changes, reset competencies to the suggested set
   if (wasRole !== r) {
-    state.selectedComps = [...ROLE_MATRIX[r]];
+    state.selectedComps = [];
     state.assignments = {};
     state.compFilter = 'suggested';
   }
@@ -20454,10 +20453,6 @@ function selectRole(r) {
 
 function proceedTo2() {
   if (!canProceed(1)) return;
-  // Ensure suggested competencies are pre-selected on first visit
-  if (state.selectedComps.length === 0 && state.role) {
-    state.selectedComps = [...ROLE_MATRIX[state.role]];
-  }
   state.step = 2;
   render();
 }
@@ -20550,26 +20545,25 @@ function toggleComp(c) {
 function renderStep3() {
   const compSections = state.selectedComps.map(c => {
     const qs = getQuestions(c);
-    const assignment = state.assignments[c] || {};
-    const qIdx = assignment.questionIdx !== undefined ? assignment.questionIdx : 0;
     if (!state.assignments[c]) state.assignments[c] = { questionIdx: 0 };
-
-    const options = qs.map((q, i) =>
-      `<option value="${i}" ${i === qIdx ? 'selected' : ''}>${esc(q.question)}</option>`
-    ).join('');
+    const qIdx = state.assignments[c].questionIdx;
+    const total = qs.length;
+    const question = qs[qIdx] ? qs[qIdx].question : '';
 
     return `
     <div class="q-card">
       <div class="q-question-label">
         <span>${esc(c)}</span>
-        <a onclick="shuffleQuestion('${esc(c)}')">↻ Shuffle</a>
+        <span style="font-size:12px;color:#9ca3af;font-weight:400">${qIdx + 1} of ${total}</span>
       </div>
-      <div style="font-size:11px;color:#9ca3af;margin-bottom:8px;line-height:1.5">${esc(getDefinition(c))}</div>
-      <select onchange="setQuestion('${esc(c)}', this.value)" style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;background:#fff;cursor:pointer;">
-        ${options}
-      </select>
-      <div class="q-selected-text" style="margin-top:10px;padding:12px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;line-height:1.6;border-left:3px solid #e05c2a;">
-        ${esc(qs[qIdx] ? qs[qIdx].question : '')}
+      <div style="font-size:11px;color:#9ca3af;margin-bottom:12px;line-height:1.5">${esc(getDefinition(c))}</div>
+      <div style="padding:14px 16px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;line-height:1.65;border-left:3px solid #e05c2a;margin-bottom:10px;">
+        ${esc(question)}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="stepQuestion('${esc(c)}',-1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
+        <button onclick="stepQuestion('${esc(c)}',1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === total - 1 ? 'disabled' : ''}>Next →</button>
+        <button onclick="shuffleQuestion('${esc(c)}')" style="padding:6px 14px;border:1.5px solid #e05c2a;border-radius:6px;background:#fff;font-size:12px;color:#e05c2a;font-weight:600;cursor:pointer;">↻ Shuffle</button>
       </div>
     </div>`;
   }).join('');
@@ -20577,7 +20571,7 @@ function renderStep3() {
   return `
   <div class="card">
     <div class="card-title">Select Questions</div>
-    <div class="card-subtitle">Choose one question per competency. Use Shuffle to randomize.</div>
+    <div class="card-subtitle">Review the selected question for each competency. Use Prev/Next to browse or Shuffle to randomize.</div>
     ${compSections}
     <div class="btn-row">
       <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
@@ -20586,19 +20580,13 @@ function renderStep3() {
   </div>`;
 }
 
-function setQuestion(comp, idx) {
-  if (!state.assignments[comp]) state.assignments[comp] = {};
-  state.assignments[comp].questionIdx = parseInt(idx);
-  // Update the preview text without full re-render
+function stepQuestion(comp, dir) {
   const qs = getQuestions(comp);
-  const cards = document.querySelectorAll('.q-card');
-  cards.forEach(card => {
-    const label = card.querySelector('.q-question-label span');
-    if (label && label.textContent === comp) {
-      const preview = card.querySelector('.q-selected-text');
-      if (preview) preview.textContent = qs[parseInt(idx)] ? qs[parseInt(idx)].question : '';
-    }
-  });
+  if (!state.assignments[comp]) state.assignments[comp] = { questionIdx: 0 };
+  const cur = state.assignments[comp].questionIdx;
+  const next = Math.max(0, Math.min(qs.length - 1, cur + dir));
+  state.assignments[comp].questionIdx = next;
+  render();
 }
 
 function shuffleQuestion(comp) {
