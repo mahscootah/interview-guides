@@ -18581,6 +18581,7 @@ var __async = (__this, __arguments, generator) => {
   })(jszip_min);
   var jszip_minExports = jszip_min.exports;
   const JSZip = /* @__PURE__ */ getDefaultExportFromCjs$1(jszip_minExports);
+  window.JSZip = JSZip;
   var xml$2 = { exports: {} };
   var XML_CHARACTER_MAP = {
     "&": "&amp;",
@@ -20794,18 +20795,29 @@ async function generateDoc() {
     const toGenerate = namedCandidates.length > 0 ? namedCandidates : [{name: '', date: ''}];
     const safeTitle = state.jobTitle.replace(/[^a-zA-Z0-9 ]/g, '').trim();
 
-    for (const c of toGenerate) {
+    if (toGenerate.length === 1) {
+      // Single candidate: direct download
+      const c = toGenerate[0];
       const blob = await buildDocx(c);
       const safeName = c.name.trim().replace(/[^a-zA-Z0-9 ]/g, '').trim();
       const filename = safeName
         ? `Interview Guide – ${safeTitle} – ${safeName}.docx`
         : `Interview Guide – ${safeTitle}.docx`;
       saveAs(blob, filename);
-      if (toGenerate.length > 1) await new Promise(r => setTimeout(r, 400));
+    } else {
+      // Multiple candidates: build all docs then ZIP
+      const zip = new window.JSZip();
+      for (const c of toGenerate) {
+        const blob = await buildDocx(c);
+        const safeName = c.name.trim().replace(/[^a-zA-Z0-9 ]/g, '').trim();
+        zip.file(`Interview Guide – ${safeTitle} – ${safeName}.docx`, blob);
+      }
+      const zipBlob = await zip.generateAsync({type: 'blob'});
+      saveAs(zipBlob, `Interview Guides – ${safeTitle}.zip`);
     }
   } catch(err) {
     console.error(err);
-    alert('Error generating document: ' + err.message + '\n\nPlease ensure you have an internet connection (needed for the document library).');
+    alert('Error generating document: ' + err.message);
   }
   
   btn.disabled = false;
