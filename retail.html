@@ -20342,7 +20342,14 @@ const state = {
   interviewDate: '',
   selectedComps: [],
   assignments: {},        // { compName: { questionIdx } }
-  compFilter: 'suggested' // 'suggested' | 'all'
+  compFilter: 'suggested', // 'suggested' | 'all'
+  scores: {},
+  notes: {},
+  strengths: '',
+  opportunities: '',
+  generalNotes: '',
+  recommendation: '',
+  overallComments: ''
 };
 
 // ─── STEP NAVIGATION ─────────────────────────────────────────────────────────
@@ -20367,6 +20374,7 @@ function render() {
   if (state.step === 2) main.innerHTML = renderStep2();
   if (state.step === 3) main.innerHTML = renderStep3();
   if (state.step === 4) main.innerHTML = renderStep4();
+  if (state.step === 5) main.innerHTML = renderStep5();
   attachEvents();
 }
 
@@ -20375,7 +20383,8 @@ function renderProgress() {
     { n: 1, label: 'Setup' },
     { n: 2, label: 'Competencies' },
     { n: 3, label: 'Questions' },
-    { n: 4, label: 'Generate' }
+    { n: 4, label: 'Generate' },
+    ...(state.step >= 5 ? [{ n: 5, label: 'Interview' }] : [])
   ];
   document.getElementById('progressBar').innerHTML = steps.map(s => {
     let cls = s.n === state.step ? 'active' : s.n < state.step ? 'done' : '';
@@ -20636,13 +20645,316 @@ function renderStep4() {
       <tbody>${rows}</tbody>
     </table>
 
-    <div class="btn-row">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
+      <div class="type-card" onclick="generateDoc()" style="cursor:pointer;padding:20px;text-align:left;">
+        <div style="font-size:22px;margin-bottom:8px">⬇</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Download Blank Guide</div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5">Export a .docx with questions and empty score/notes fields for pen-and-paper interviews.</div>
+      </div>
+      <div class="type-card" onclick="startOnlineInterview()" style="cursor:pointer;padding:20px;text-align:left;">
+        <div style="font-size:22px;margin-bottom:8px">💻</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Conduct Online Interview</div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5">Score and take notes live in the browser, then download the completed results.</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
       <button class="btn-secondary" onclick="goToStep(3)">← Back</button>
-      <button class="btn-primary" onclick="generateDoc()">
-        ⬇ Download Interview Guide (.docx)
-      </button>
     </div>
   </div>`;
+}
+
+
+// ─── ONLINE INTERVIEW MODE ────────────────────────────────────────────────────
+function startOnlineInterview() {
+  // reset scores/notes when entering fresh
+  state.scores = {};
+  state.notes = {};
+  state.strengths = '';
+  state.opportunities = '';
+  state.generalNotes = '';
+  state.recommendation = '';
+  state.overallComments = '';
+  state.step = 5;
+  render();
+}
+
+const SCORE_OPTIONS = ['1','2','3','4','N/O'];
+const SCORE_LABELS = {
+  '1': 'Does Not Meet',
+  '2': 'Partially Meets',
+  '3': 'Meets',
+  '4': 'Exceeds',
+  'N/O': 'Not Observed'
+};
+
+function setScore(comp, val) {
+  state.scores[comp] = val;
+  // update UI without full re-render
+  document.querySelectorAll(`[data-comp="${comp}"] .score-btn`).forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === val);
+  });
+}
+function setNotes(comp, val) { state.notes[comp] = val; }
+function setStrengths(val) { state.strengths = val; }
+function setOpportunities(val) { state.opportunities = val; }
+function setGeneralNotes(val) { state.generalNotes = val; }
+function setRecommendation(val) {
+  state.recommendation = val;
+  document.querySelectorAll('.rec-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === val);
+  });
+}
+function setOverallComments(val) { state.overallComments = val; }
+
+function renderStep5() {
+  const roleLabel = ROLE_LABELS[state.role] || '';
+
+  const compSections = state.selectedComps.map(c => {
+    const qs = getQuestions(c);
+    const qIdx = (state.assignments[c] || {}).questionIdx || 0;
+    const question = qs[qIdx] ? qs[qIdx].question : '';
+    const curScore = state.scores[c] || '';
+    const curNotes = state.notes[c] || '';
+
+    const scoreBtns = SCORE_OPTIONS.map(s =>
+      `<button class="score-btn ${curScore === s ? 'active' : ''}" data-val="${s}"
+        onclick="setScore('${esc(c)}','${s}')" title="${SCORE_LABELS[s]}">${s}</button>`
+    ).join('');
+
+    return `
+    <div class="q-card" data-comp="${esc(c)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e">${esc(c)}</div>
+      </div>
+      <div style="padding:12px 14px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;line-height:1.65;border-left:3px solid #e05c2a;margin-bottom:12px">${esc(question)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:12px;font-weight:600;color:#6b7280;min-width:48px">Score:</span>
+        <div style="display:flex;gap:6px">${scoreBtns}</div>
+        ${curScore ? `<span style="font-size:11px;color:#6b7280;font-style:italic">${SCORE_LABELS[curScore]}</span>` : ''}
+      </div>
+      <textarea placeholder="Notes / follow-up observations…" rows="2"
+        style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box;font-family:inherit"
+        oninput="setNotes('${esc(c)}',this.value)">${esc(curNotes)}</textarea>
+    </div>`;
+  }).join('');
+
+  const recBtns = [
+    { val: 'strongly_recommend', label: 'Strongly Recommend' },
+    { val: 'recommend',          label: 'Recommend' },
+    { val: 'do_not_recommend',   label: 'Do Not Recommend' }
+  ].map(r =>
+    `<button class="rec-btn ${state.recommendation === r.val ? 'active' : ''}" data-val="${r.val}"
+      onclick="setRecommendation('${r.val}')">${r.label}</button>`
+  ).join('');
+
+  return `
+  <style>
+    .score-btn { padding:5px 11px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;font-weight:700;color:#6b7280;cursor:pointer;transition:all 0.12s; }
+    .score-btn.active { background:#e05c2a;border-color:#e05c2a;color:#fff; }
+    .score-btn:hover:not(.active) { border-color:#e05c2a;color:#e05c2a; }
+    .rec-btn { padding:8px 18px;border:2px solid #e2e6ea;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;transition:all 0.12s; }
+    .rec-btn.active { border-color:#e05c2a;background:#fff8f5;color:#e05c2a; }
+    .rec-btn:hover:not(.active) { border-color:#e05c2a; }
+  </style>
+  <div class="card">
+    <div class="card-title">Live Interview Form</div>
+    <div class="card-subtitle">${esc(roleLabel)} • ${esc(state.candidateName || 'Candidate')} • ${esc(state.interviewDate || '')}</div>
+
+    ${compSections}
+
+    <div style="margin-top:28px">
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px;padding-bottom:8px;border-bottom:2px solid #e05c2a">Additional Notes</div>
+    </div>
+
+    <div class="q-card" style="margin-top:14px">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Strengths</div>
+      <textarea rows="3" placeholder="Candidate strengths observed…"
+        style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box;font-family:inherit"
+        oninput="setStrengths(this.value)">${esc(state.strengths)}</textarea>
+    </div>
+    <div class="q-card" style="margin-top:10px">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Opportunities / Concerns</div>
+      <textarea rows="3" placeholder="Development areas or concerns…"
+        style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box;font-family:inherit"
+        oninput="setOpportunities(this.value)">${esc(state.opportunities)}</textarea>
+    </div>
+    <div class="q-card" style="margin-top:10px">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">General Notes</div>
+      <textarea rows="2" placeholder="Any other observations…"
+        style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box;font-family:inherit"
+        oninput="setGeneralNotes(this.value)">${esc(state.generalNotes)}</textarea>
+    </div>
+
+    <div style="margin-top:28px">
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px;padding-bottom:8px;border-bottom:2px solid #e05c2a">Hiring Recommendation</div>
+    </div>
+    <div class="q-card" style="margin-top:14px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">${recBtns}</div>
+      <textarea rows="3" placeholder="Overall comments and recommendation rationale…"
+        style="width:100%;padding:10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box;font-family:inherit"
+        oninput="setOverallComments(this.value)">${esc(state.overallComments)}</textarea>
+    </div>
+
+    <div class="btn-row" style="margin-top:24px">
+      <button class="btn-secondary" onclick="goToStep(4)">← Back</button>
+      <button class="btn-primary" onclick="generateResults()">⬇ Download Results (.docx)</button>
+    </div>
+  </div>`;
+}
+
+async function generateResults() {
+  const { Document, Paragraph, TextRun, Table, TableRow, TableCell, Header, Footer,
+          WidthType, AlignmentType, BorderStyle, PageNumber, Packer } = window.docx;
+
+  function para(text, opts = {}) {
+    return new Paragraph({
+      children: [new TextRun({ text: text || '', font:'Arial', size: opts.size||20, bold: opts.bold||false, color: opts.color||'000000', italics: opts.italics||false })],
+      alignment: opts.align || AlignmentType.LEFT,
+      spacing: { before: opts.before||0, after: opts.after||100 }
+    });
+  }
+  function emptyPara() { return para('', { size:14, after:0 }); }
+  function headerPara(text) {
+    return new Paragraph({
+      children: [new TextRun({ text, font:'Arial', size:22, bold:true, color:'1A1A2E' })],
+      spacing: { before:200, after:120 },
+      border: { bottom: { style: BorderStyle.SINGLE, size:6, color:'E05C2A', space:4 } }
+    });
+  }
+  function cell(children, opts = {}) {
+    return new TableCell({
+      children,
+      shading: opts.shade ? { fill: opts.shade } : undefined,
+      width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
+      margins: { top:100, bottom:100, left:120, right:120 }
+    });
+  }
+
+  const roleLabel = ROLE_LABELS[state.role] || '';
+  const REC_LABELS = { strongly_recommend:'Strongly Recommend', recommend:'Recommend', do_not_recommend:'Do Not Recommend' };
+  const children = [];
+
+  // Title
+  children.push(new Paragraph({
+    children: [
+      new TextRun({ text:'Columbia Sportswear', font:'Arial', size:28, bold:true, color:'1A1A2E' }),
+      new TextRun({ text:'  |  Interview Results', font:'Arial', size:24, color:'6b7280' })
+    ],
+    spacing: { after:80 }
+  }));
+  children.push(para('Retail — Store Positions', { size:18, color:'9CA3AF', after:240 }));
+
+  // Info table
+  const infoRows = [
+    ['Role / Job Title', roleLabel],
+    ['Candidate', state.candidateName || ''],
+    ['Interviewer', state.interviewer],
+    ['Interview Date', state.interviewDate || '']
+  ].filter(([,v]) => v).map(([k,v]) =>
+    new TableRow({ children: [
+      cell([para(k, { bold:true, size:18 })], { shade:'F3F4F6', width:2000 }),
+      cell([para(v, { size:18 })], { width:7360 })
+    ]})
+  );
+  children.push(new Table({ width:{ size:9360, type:WidthType.DXA }, columnWidths:[2000,7360], rows:infoRows }));
+  children.push(emptyPara());
+
+  // Score key
+  children.push(headerPara('Score Key'));
+  const scoreKeyRows = [
+    ['1 – Does Not Meet','Response does not demonstrate the competency. Lacks examples or key behaviors.'],
+    ['2 – Partially Meets','Response partially demonstrates the competency. Some key behaviors present.'],
+    ['3 – Meets','Response clearly demonstrates the competency with a solid example.'],
+    ['4 – Exceeds','Response strongly demonstrates the competency. Example is specific, detailed, and impactful.'],
+    ['N/O – Not Observed','Competency was not assessed in this interview.']
+  ].map(([s,d]) => new TableRow({ children:[
+    cell([para(s, { bold:true, size:18 })], { shade:'F9FAFB', width:2400 }),
+    cell([para(d, { size:18 })], { width:6960 })
+  ]}));
+  children.push(new Table({ width:{ size:9360, type:WidthType.DXA }, columnWidths:[2400,6960], rows:scoreKeyRows }));
+  children.push(emptyPara());
+
+  // Results table
+  children.push(headerPara('Interview Results'));
+  children.push(para('Interviewer: ' + state.interviewer, { bold:true, size:20, after:120 }));
+
+  const qHeader = new TableRow({ children:[
+    cell([para('COMPETENCY', { bold:true, size:16, color:'6B7280' })], { shade:'F3F4F6', width:1800 }),
+    cell([para('QUESTION', { bold:true, size:16, color:'6B7280' })], { shade:'F3F4F6', width:4560 }),
+    cell([para('SCORE', { bold:true, size:16, color:'6B7280' })], { shade:'F3F4F6', width:800 }),
+    cell([para('NOTES', { bold:true, size:16, color:'6B7280' })], { shade:'F3F4F6', width:2200 })
+  ], tableHeader:true });
+
+  const qRows = state.selectedComps.map(c => {
+    const qs = getQuestions(c);
+    const qIdx = (state.assignments[c]||{}).questionIdx || 0;
+    const q = qs[qIdx] ? qs[qIdx].question : '';
+    const score = state.scores[c] || '';
+    const note = state.notes[c] || '';
+    return new TableRow({ children:[
+      cell([para(c, { bold:true, size:18 })], { shade:'FAFAFA', width:1800 }),
+      cell([para(q, { size:18 })], { width:4560 }),
+      cell([para(score, { bold:true, size:18, color: score==='4'?'16a34a': score==='1'?'dc2626':'000000' })], { width:800 }),
+      cell([para(note, { size:18 })], { width:2200 })
+    ]});
+  });
+
+  children.push(new Table({ width:{ size:9360, type:WidthType.DXA }, columnWidths:[1800,4560,800,2200], rows:[qHeader,...qRows] }));
+  children.push(emptyPara());
+
+  // Additional notes
+  children.push(headerPara('Additional Notes'));
+  const notesRows = [
+    ['Strengths', state.strengths],
+    ['Opportunities / Concerns', state.opportunities],
+    ['General Notes', state.generalNotes]
+  ].map(([label, val]) => new TableRow({ children:[
+    cell([para(label, { bold:true, size:18 })], { shade:'F3F4F6', width:2400 }),
+    cell([para(val||'', { size:18 }), emptyPara()], { width:6960 })
+  ]}));
+  children.push(new Table({ width:{ size:9360, type:WidthType.DXA }, columnWidths:[2400,6960], rows:notesRows }));
+  children.push(emptyPara());
+
+  // Recommendation
+  children.push(headerPara('Hiring Recommendation'));
+  const recLabel = REC_LABELS[state.recommendation] || '';
+  const recRows = [
+    ['Recommendation', recLabel],
+    ['Overall Comments', state.overallComments]
+  ].map(([k,v]) => new TableRow({ children:[
+    cell([para(k, { bold:true, size:18 })], { shade:'F3F4F6', width:2400 }),
+    cell([para(v||'', { size:18 }), emptyPara()], { width:6960 })
+  ]}));
+  children.push(new Table({ width:{ size:9360, type:WidthType.DXA }, columnWidths:[2400,6960], rows:recRows }));
+
+  const doc = new Document({
+    styles: { default: { document: { run: { font:'Arial', size:20 } } } },
+    sections: [{
+      properties: { page: { size:{ width:12240, height:15840 }, margin:{ top:1080, right:1080, bottom:1080, left:1080 } } },
+      headers: { default: new Header({ children:[new Paragraph({
+        children:[
+          new TextRun({ text:`Interview Results – ${getJobTitle()}`, font:'Arial', size:18, color:'9CA3AF' }),
+          new TextRun({ text:`	${state.candidateName || ''}`, font:'Arial', size:18, color:'9CA3AF' })
+        ],
+        tabStops:[{ type:window.docx.TabStopType.RIGHT, position:window.docx.TabStopPosition.MAX }],
+        spacing:{ after:0 },
+        border:{ bottom:{ style:BorderStyle.SINGLE, size:4, color:'E2E6EA', space:2 } }
+      })]})},
+      footers: { default: new Footer({ children:[new Paragraph({
+        children:[
+          new TextRun({ text:'Confidential', font:'Arial', size:16, color:'9CA3AF', italics:true }),
+          new TextRun({ children:['	Page ', PageNumber.CURRENT, ' of ', PageNumber.TOTAL_PAGES], font:'Arial', size:16, color:'9CA3AF' })
+        ],
+        tabStops:[{ type:window.docx.TabStopType.RIGHT, position:window.docx.TabStopPosition.MAX }],
+        spacing:{ before:0 },
+        border:{ top:{ style:BorderStyle.SINGLE, size:4, color:'E2E6EA', space:2 } }
+      })]})},
+      children
+    }]
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, `Interview Results – ${getJobTitle()} – ${state.candidateName||'Candidate'}.docx`);
 }
 
 // ─── DOC GENERATION ───────────────────────────────────────────────────────────
