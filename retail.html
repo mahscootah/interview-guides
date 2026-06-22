@@ -20656,8 +20656,23 @@ function renderStep4() {
     </div>
     <div class="btn-row" style="margin-top:16px">
       <button class="btn-secondary" onclick="goToStep(3)">← Back</button>
+      <button class="btn-secondary" id="copyQuestionsBtn" onclick="copyQuestions()">📋 Copy Questions</button>
     </div>
   </div>`;
+}
+
+function copyQuestions() {
+  const lines = state.selectedComps.map((comp, i) => {
+    const qs = getQuestions(comp);
+    const asgn = state.assignments[comp] || { questionIdx: 0 };
+    const question = (qs[asgn.questionIdx] || qs[0] || {}).question || '';
+    return `${i + 1}. [${comp}]\n${question}`;
+  });
+  const text = lines.join('\n\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyQuestionsBtn');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = '📋 Copy Questions'; }, 2000); }
+  });
 }
 
 

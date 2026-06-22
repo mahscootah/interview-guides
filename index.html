@@ -20754,11 +20754,26 @@ function renderStep4() {
 
     <div class="btn-row">
       <button class="btn-secondary" onclick="state.step=3;render()">← Edit Questions</button>
+      <button class="btn-secondary" id="copyQuestionsBtn" onclick="copyQuestions()">📋 Copy Questions</button>
       <button class="btn-primary" id="generateBtn" onclick="generateDoc()">
         <span id="generateBtnText">${btnLabel}</span>
       </button>
     </div>
   </div>`;
+}
+
+function copyQuestions() {
+  const lines = state.selectedComps.map((comp, i) => {
+    const qs = getQuestions(comp);
+    const asgn = state.assignments[comp] || { questionIdx: 0 };
+    const question = (qs[asgn.questionIdx] || qs[0] || {}).question || '';
+    return `${i + 1}. [${comp}]\n${question}`;
+  });
+  const text = lines.join('\n\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyQuestionsBtn');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = '📋 Copy Questions'; }, 2000); }
+  });
 }
 
 function addCandidate() {
