@@ -21380,15 +21380,23 @@ const state = {
   role: '',
   selectedComps: [],        // array of competency names
   assignments: {},          // { compName: { questionIdx, panelistIdx } }
-  candidates: []            // bundle: [{name, date}]
+  candidates: [],           // bundle: [{name, date}]
+  customQuestions: {}       // { compName: ["custom q1", ...] }
 };
+
+const _customInputOpen = {}; // tracks which competency inputs are expanded
 
 // ─── DERIVED DATA ─────────────────────────────────────────────────────────────
 const LEADERSHIP = [...new Set(QBANK.filter(q=>q.group==='Leadership Capabilities').map(q=>q.competency))].sort();
 const BEHAVIORAL = [...new Set(QBANK.filter(q=>q.group==='Behavioral Skills').map(q=>q.competency))].sort();
 
 function getQuestions(competency) {
-  return QBANK.filter(q => q.competency === competency);
+  const base = QBANK.filter(q => q.competency === competency);
+  const custom = (state.customQuestions && state.customQuestions[competency]) || [];
+  if (!custom.length) return base;
+  const def = base.length ? base[0].definition : '';
+  const group = base.length ? base[0].group : '';
+  return [...base, ...custom.map(q => ({ group, competency, definition: def, question: q }))];
 }
 function getDefinition(competency) {
   const q = QBANK.find(q => q.competency === competency);
@@ -21700,6 +21708,18 @@ function renderStep3() {
       <select class="q-select" onchange="updateQuestion('${esc(comp)}', parseInt(this.value))">
         ${questionOptions}
       </select>
+      ${_customInputOpen[comp] ? `
+      <div style="margin-top:8px">
+        <textarea id="customQ_${esc(comp.replace(/\W/g,'_'))}" placeholder="Type your custom question…" rows="3"
+          style="width:100%;padding:9px 12px;border:1.5px solid #e05c2a;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;color:#1a1a2e;outline:none"></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button onclick="saveCustomQuestion('${esc(comp)}')" style="padding:6px 16px;background:#e05c2a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">Add Question</button>
+          <button onclick="cancelCustomQuestion('${esc(comp)}')" style="padding:6px 14px;background:#fff;color:#6b7280;border:1.5px solid #e2e6ea;border-radius:6px;font-size:13px;cursor:pointer">Cancel</button>
+        </div>
+      </div>` : `
+      <div style="margin-top:6px">
+        <a onclick="openCustomQuestion('${esc(comp)}')" style="font-size:12px;color:#e05c2a;cursor:pointer;text-decoration:none;font-weight:500">＋ Write your own question</a>
+      </div>`}
     </div>`;
   }).join('');
 
@@ -21733,6 +21753,28 @@ function rotateQuestion(comp) {
   const asgn = state.assignments[comp] || { questionIdx: 0, panelistIdx: 0 };
   asgn.questionIdx = (asgn.questionIdx + 1) % questions.length;
   state.assignments[comp] = asgn;
+  render();
+}
+
+function openCustomQuestion(comp) {
+  _customInputOpen[comp] = true;
+  render();
+}
+function cancelCustomQuestion(comp) {
+  _customInputOpen[comp] = false;
+  render();
+}
+function saveCustomQuestion(comp) {
+  const id = 'customQ_' + comp.replace(/\W/g, '_');
+  const ta = document.getElementById(id);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) return;
+  if (!state.customQuestions[comp]) state.customQuestions[comp] = [];
+  state.customQuestions[comp].push(text);
+  const allQ = getQuestions(comp);
+  if (!state.assignments[comp]) state.assignments[comp] = { questionIdx: 0, panelistIdx: 0 };
+  state.assignments[comp].questionIdx = allQ.length - 1;
+  _customInputOpen[comp] = false;
   render();
 }
 
