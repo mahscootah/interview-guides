@@ -20303,6 +20303,10 @@ var __async = (__this, __arguments, generator) => {
 
 <div class="main" id="mainContent"></div>
 
+<div style="text-align:center;padding:12px 0 18px;font-size:11px;color:#9ca3af;font-family:inherit">
+  Last updated: August 11, 2026
+</div>
+
 <script>
 // ─── QUESTION BANK DATA ───────────────────────────────────────────────────────
 const QBANK = [
@@ -21380,15 +21384,24 @@ const state = {
   role: '',
   selectedComps: [],        // array of competency names
   assignments: {},          // { compName: { questionIdx, panelistIdx } }
-  candidates: []            // bundle: [{name, date}]
+  candidates: [],           // bundle: [{name, date}]
+  customQuestions: {},      // { compName: ["custom q1", ...] }
+  extraSlots: []            // [{ competency, questionIdx, panelistIdx }] — additional question rows
 };
+
+const _customInputOpen = {}; // tracks which competency inputs are expanded
 
 // ─── DERIVED DATA ─────────────────────────────────────────────────────────────
 const LEADERSHIP = [...new Set(QBANK.filter(q=>q.group==='Leadership Capabilities').map(q=>q.competency))].sort();
 const BEHAVIORAL = [...new Set(QBANK.filter(q=>q.group==='Behavioral Skills').map(q=>q.competency))].sort();
 
 function getQuestions(competency) {
-  return QBANK.filter(q => q.competency === competency);
+  const base = QBANK.filter(q => q.competency === competency);
+  const custom = (state.customQuestions && state.customQuestions[competency]) || [];
+  if (!custom.length) return base;
+  const def = base.length ? base[0].definition : '';
+  const group = base.length ? base[0].group : '';
+  return [...base, ...custom.map(q => ({ group, competency, definition: def, question: q }))];
 }
 function getDefinition(competency) {
   const q = QBANK.find(q => q.competency === competency);
@@ -21700,6 +21713,56 @@ function renderStep3() {
       <select class="q-select" onchange="updateQuestion('${esc(comp)}', parseInt(this.value))">
         ${questionOptions}
       </select>
+      ${_customInputOpen[comp] ? `
+      <div style="margin-top:8px">
+        <textarea id="customQ_${esc(comp.replace(/\W/g,'_'))}" placeholder="Type your custom question…" rows="3"
+          style="width:100%;padding:9px 12px;border:1.5px solid #e05c2a;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;color:#1a1a2e;outline:none"></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button onclick="saveCustomQuestion('${esc(comp)}')" style="padding:6px 16px;background:#e05c2a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">Add Question</button>
+          <button onclick="cancelCustomQuestion('${esc(comp)}')" style="padding:6px 14px;background:#fff;color:#6b7280;border:1.5px solid #e2e6ea;border-radius:6px;font-size:13px;cursor:pointer">Cancel</button>
+        </div>
+      </div>` : `
+      <div style="margin-top:6px">
+        <a onclick="openCustomQuestion('${esc(comp)}')" style="font-size:12px;color:#e05c2a;cursor:pointer;text-decoration:none;font-weight:500">＋ Write your own question</a>
+      </div>`}
+    </div>`;
+  }).join('');
+
+  const allComps = [...LEADERSHIP, ...BEHAVIORAL];
+
+  const extraItems = state.extraSlots.map((slot, si) => {
+    const comp = slot.competency;
+    const qs = getQuestions(comp);
+    const asgn = { questionIdx: slot.questionIdx || 0, panelistIdx: slot.panelistIdx || 0 };
+    const safeId = `extra_${si}`;
+
+    const questionOptions = qs.map((q, qi) =>
+      `<option value="${qi}" ${qi === asgn.questionIdx ? 'selected' : ''}>${esc(q.question)}</option>`
+    ).join('');
+
+    const panelistRow = isPanel && hasPanelists ? `
+      <div class="q-panelist-row">
+        <span class="q-panelist-label">Assign to panelist:</span>
+        <select class="q-panelist-select" onchange="updateExtraPanelist(${si}, parseInt(this.value))">
+          ${panelists.map((p, pi) => `<option value="${pi}" ${pi === asgn.panelistIdx ? 'selected' : ''}>${esc(p)}</option>`).join('')}
+        </select>
+      </div>` : '';
+
+    return `
+    <div class="q-item" style="border-left:3px solid #8b5cf6">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <select onchange="updateExtraComp(${si}, this.value)"
+          style="flex:1;padding:7px 10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;font-family:inherit;color:#1a1a2e;outline:none;margin-right:10px">
+          ${allComps.map(c => `<option value="${esc(c)}" ${c === comp ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+        </select>
+        <button onclick="removeExtraSlot(${si})" title="Remove"
+          style="padding:4px 10px;border:1px solid #e2e6ea;background:#fff;border-radius:6px;color:#9ca3af;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>
+      </div>
+      ${panelistRow}
+      <div class="q-question-label">Interview Question</div>
+      <select class="q-select" onchange="updateExtraQuestion(${si}, parseInt(this.value))">
+        ${questionOptions}
+      </select>
     </div>`;
   }).join('');
 
@@ -21707,10 +21770,14 @@ function renderStep3() {
   <div class="card">
     <div class="card-title">Review Questions</div>
     <div class="card-subtitle">
-      A question has been auto-selected for each competency. Use the dropdown to choose a different question, 
+      A question has been auto-selected for each competency. Use the dropdown to choose a different question,
       ${state.interviewType === 'panel' ? 'and assign each question to a panelist.' : 'or click ↻ to cycle through options.'}
     </div>
     ${items}
+    ${extraItems}
+    <button onclick="addExtraSlot()" style="width:100%;border:1.5px dashed #8b5cf6;background:none;border-radius:8px;padding:10px 16px;font-size:13px;color:#8b5cf6;cursor:pointer;margin-top:4px;margin-bottom:4px;font-weight:500;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+      + Add Another Question
+    </button>
     <div class="btn-row">
       <button class="btn-secondary" onclick="state.step=2;render()">← Back</button>
       <button class="btn-primary" onclick="state.step=4;render()">
@@ -21734,6 +21801,50 @@ function rotateQuestion(comp) {
   asgn.questionIdx = (asgn.questionIdx + 1) % questions.length;
   state.assignments[comp] = asgn;
   render();
+}
+
+function openCustomQuestion(comp) {
+  _customInputOpen[comp] = true;
+  render();
+}
+function cancelCustomQuestion(comp) {
+  _customInputOpen[comp] = false;
+  render();
+}
+function saveCustomQuestion(comp) {
+  const id = 'customQ_' + comp.replace(/\W/g, '_');
+  const ta = document.getElementById(id);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) return;
+  if (!state.customQuestions[comp]) state.customQuestions[comp] = [];
+  state.customQuestions[comp].push(text);
+  const allQ = getQuestions(comp);
+  if (!state.assignments[comp]) state.assignments[comp] = { questionIdx: 0, panelistIdx: 0 };
+  state.assignments[comp].questionIdx = allQ.length - 1;
+  _customInputOpen[comp] = false;
+  render();
+}
+
+function addExtraSlot() {
+  const defaultComp = LEADERSHIP[0] || BEHAVIORAL[0];
+  const panelists = state.interviewers.filter(p => p.trim());
+  state.extraSlots.push({ competency: defaultComp, questionIdx: 0, panelistIdx: 0 });
+  render();
+}
+function removeExtraSlot(i) {
+  state.extraSlots.splice(i, 1);
+  render();
+}
+function updateExtraComp(i, comp) {
+  state.extraSlots[i].competency = comp;
+  state.extraSlots[i].questionIdx = 0;
+  render();
+}
+function updateExtraQuestion(i, idx) {
+  state.extraSlots[i].questionIdx = idx;
+}
+function updateExtraPanelist(i, idx) {
+  state.extraSlots[i].panelistIdx = idx;
 }
 
 // ─── STEP 4: GENERATE ─────────────────────────────────────────────────────────
@@ -21828,6 +21939,11 @@ function copyQuestions() {
     const asgn = state.assignments[comp] || { questionIdx: 0 };
     const question = (qs[asgn.questionIdx] || qs[0] || {}).question || '';
     return `${i + 1}. [${comp}]\n${question}`;
+  });
+  state.extraSlots.forEach((slot, i) => {
+    const qs = getQuestions(slot.competency);
+    const question = (qs[slot.questionIdx] || qs[0] || {}).question || '';
+    lines.push(`${state.selectedComps.length + i + 1}. [${slot.competency}]\n${question}`);
   });
   const text = lines.join('\n\n');
   navigator.clipboard.writeText(text).then(() => {
@@ -22100,6 +22216,73 @@ async function buildDocx(candidate = {}) {
       margins: { top: 80, bottom: 80, left: 120, right: 120 }
     });
     questionRows.push(new TableRow({ children: [scoreLabelCell] }));
+  });
+
+  // Extra question slots
+  (state.extraSlots || []).forEach((slot, si) => {
+    const ci = state.selectedComps.length + si;
+    const comp = slot.competency;
+    const qs = getQuestions(comp);
+    const q = qs[slot.questionIdx] || qs[0];
+    const group = getGroup(comp);
+    const isL = group === 'Leadership Capabilities';
+    const panelistName = isPanel
+      ? (panelists[slot.panelistIdx] || panelists[0] || state.hiringManager)
+      : (panelists[0] || state.hiringManager);
+    const rowShade = ci % 2 === 0 ? 'F9FAFB' : 'FFFFFF';
+
+    const extraCompCell = new TableCell({
+      children: [
+        new Paragraph({ children: [new TextRun({ text: comp, font:'Arial', size:20, bold:true })], spacing:{after:60} }),
+        new Paragraph({ children: [new TextRun({ text: isL ? 'Leadership' : 'Behavioral', font:'Arial', size:16, color: isL ? 'E05C2A' : '2563EB', bold:true })], spacing:{after:0} })
+      ],
+      borders: allBorders,
+      width: { size: isPanel ? 2000 : 2400, type: WidthType.DXA },
+      shading: { fill: rowShade, type: ShadingType.CLEAR },
+      verticalAlign: VerticalAlign.TOP,
+      margins: { top: 120, bottom: 120, left: 120, right: 120 }
+    });
+    const extraQuestionCell = new TableCell({
+      children: [new Paragraph({ children: [new TextRun({ text: q ? q.question : '', font:'Arial', size:20 })], spacing:{after:0} })],
+      borders: allBorders,
+      width: { size: isPanel ? 3360 : 3760, type: WidthType.DXA },
+      shading: { fill: rowShade, type: ShadingType.CLEAR },
+      verticalAlign: VerticalAlign.TOP,
+      margins: { top: 120, bottom: 120, left: 120, right: 120 }
+    });
+    const extraNotesCell = new TableCell({
+      children: [para('', {size:18}), para('', {size:18}), para('', {size:18})],
+      borders: allBorders,
+      width: { size: isPanel ? 2200 : 3200, type: WidthType.DXA },
+      shading: { fill: rowShade, type: ShadingType.CLEAR },
+      verticalAlign: VerticalAlign.TOP,
+      margins: { top: 120, bottom: 120, left: 120, right: 120 }
+    });
+    const extraScoreCell = new TableCell({
+      children: [new Paragraph({ children: [
+        new TextRun({ text: 'Score: ', font:'Arial', size:18, bold:true }),
+        new TextRun({ text: '  1 – Emerging    2 – Skilled    3 – Highly Skilled    4 – Advanced', font:'Arial', size:18, color:'6B7280' })
+      ], spacing:{after:0}})],
+      borders: { top: noBorder, bottom: cellBorder, left: cellBorder, right: cellBorder },
+      columnSpan: isPanel ? 4 : 3,
+      shading: { fill: 'F3F4F6', type: ShadingType.CLEAR },
+      margins: { top: 80, bottom: 80, left: 120, right: 120 }
+    });
+
+    if (isPanel) {
+      const extraPanelistCell = new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: panelistName, font:'Arial', size:20 })], spacing:{after:0} })],
+        borders: allBorders,
+        width: { size: 1800, type: WidthType.DXA },
+        shading: { fill: rowShade, type: ShadingType.CLEAR },
+        verticalAlign: VerticalAlign.TOP,
+        margins: { top: 120, bottom: 120, left: 120, right: 120 }
+      });
+      questionRows.push(new TableRow({ children: [extraCompCell, extraPanelistCell, extraQuestionCell, extraNotesCell] }));
+    } else {
+      questionRows.push(new TableRow({ children: [extraCompCell, extraQuestionCell, extraNotesCell] }));
+    }
+    questionRows.push(new TableRow({ children: [extraScoreCell] }));
   });
 
   const questionsTable = new Table({

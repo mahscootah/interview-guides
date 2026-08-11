@@ -21366,7 +21366,12 @@ const QBANK = [
 ];
 
 function getQuestions(competency) {
-  return QBANK.filter(q => q.competency === competency);
+  const base = QBANK.filter(q => q.competency === competency);
+  const custom = (state.customQuestions && state.customQuestions[competency]) || [];
+  if (!custom.length) return base;
+  const def = base.length ? base[0].definition : '';
+  const group = base.length ? base[0].group : '';
+  return [...base, ...custom.map(q => ({ group, competency, definition: def, question: q }))];
 }
 function getDefinition(competency) {
   const q = QBANK.find(q => q.competency === competency);
@@ -21406,8 +21411,12 @@ const state = {
   opportunities: '',
   generalNotes: '',
   recommendation: '',
-  overallComments: ''
+  overallComments: '',
+  customQuestions: {},    // { compName: ["custom q1", ...] }
+  extraSlots: []          // [{ competency, questionIdx }] — additional question rows
 };
+
+const _customInputOpen = {}; // tracks which competency inputs are expanded
 
 // ─── STEP NAVIGATION ─────────────────────────────────────────────────────────
 function goToStep(n) {
@@ -21626,10 +21635,57 @@ function renderStep3() {
       <div style="padding:14px 16px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;line-height:1.65;border-left:3px solid #e05c2a;margin-bottom:10px;">
         ${esc(question)}
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button onclick="stepQuestion('${esc(c)}',-1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
         <button onclick="stepQuestion('${esc(c)}',1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === total - 1 ? 'disabled' : ''}>Next →</button>
         <button onclick="shuffleQuestion('${esc(c)}')" style="padding:6px 14px;border:1.5px solid #e05c2a;border-radius:6px;background:#fff;font-size:12px;color:#e05c2a;font-weight:600;cursor:pointer;">↻ Shuffle</button>
+      </div>
+      ${_customInputOpen[c] ? `
+      <div style="margin-top:10px">
+        <textarea id="customQ_${c.replace(/\W/g,'_')}" placeholder="Type your custom question…" rows="3"
+          style="width:100%;padding:9px 12px;border:1.5px solid #e05c2a;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;color:#1a1a2e;outline:none"></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button onclick="saveCustomQuestion('${esc(c)}')" style="padding:6px 16px;background:#e05c2a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">Add Question</button>
+          <button onclick="cancelCustomQuestion('${esc(c)}')" style="padding:6px 14px;background:#fff;color:#6b7280;border:1.5px solid #e2e6ea;border-radius:6px;font-size:13px;cursor:pointer">Cancel</button>
+        </div>
+      </div>` : `
+      <div style="margin-top:8px">
+        <a onclick="openCustomQuestion('${esc(c)}')" style="font-size:12px;color:#e05c2a;cursor:pointer;text-decoration:none;font-weight:500">＋ Write your own question</a>
+      </div>`}
+    </div>`;
+  }).join('');
+
+  const allComps = [...new Set(QBANK.map(q => q.competency))].sort();
+
+  const extraSections = state.extraSlots.map((slot, si) => {
+    const comp = slot.competency;
+    const qs = getQuestions(comp);
+    const qIdx = slot.questionIdx || 0;
+    const total = qs.length;
+    const question = qs[qIdx] ? qs[qIdx].question : '';
+
+    return `
+    <div class="q-card" style="border-left:3px solid #8b5cf6">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <select onchange="updateExtraComp(${si}, this.value)"
+          style="flex:1;padding:7px 10px;border:1.5px solid #e2e6ea;border-radius:8px;font-size:13px;font-family:inherit;color:#1a1a2e;outline:none;margin-right:10px">
+          ${allComps.map(c => `<option value="${esc(c)}" ${c === comp ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+        </select>
+        <button onclick="removeExtraSlot(${si})" title="Remove"
+          style="padding:4px 10px;border:1px solid #e2e6ea;background:#fff;border-radius:6px;color:#9ca3af;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>
+      </div>
+      <div style="font-size:11px;color:#9ca3af;margin-bottom:12px;line-height:1.5">${esc(getDefinition(comp))}</div>
+      <div class="q-question-label">
+        <span>Question</span>
+        <span style="font-size:12px;color:#9ca3af;font-weight:400">${qIdx + 1} of ${total}</span>
+      </div>
+      <div style="padding:14px 16px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;line-height:1.65;border-left:3px solid #8b5cf6;margin-bottom:10px;">
+        ${esc(question)}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="stepExtraQuestion(${si},-1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
+        <button onclick="stepExtraQuestion(${si},1)" style="padding:6px 14px;border:1.5px solid #e2e6ea;border-radius:6px;background:#fff;font-size:12px;color:#6b7280;cursor:pointer;" ${qIdx === total - 1 ? 'disabled' : ''}>Next →</button>
+        <button onclick="shuffleExtraQuestion(${si})" style="padding:6px 14px;border:1.5px solid #8b5cf6;border-radius:6px;background:#fff;font-size:12px;color:#8b5cf6;font-weight:600;cursor:pointer;">↻ Shuffle</button>
       </div>
     </div>`;
   }).join('');
@@ -21639,6 +21695,10 @@ function renderStep3() {
     <div class="card-title">Select Questions</div>
     <div class="card-subtitle">Review the selected question for each competency. Use Prev/Next to browse or Shuffle to randomize.</div>
     ${compSections}
+    ${extraSections}
+    <button onclick="addExtraSlot()" style="width:100%;border:1.5px dashed #8b5cf6;background:none;border-radius:8px;padding:10px 16px;font-size:13px;color:#8b5cf6;cursor:pointer;margin-top:4px;margin-bottom:4px;font-weight:500;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+      + Add Another Question
+    </button>
     <div class="btn-row">
       <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
       <button class="btn-primary" onclick="goToStep(4)">Review & Generate →</button>
@@ -21663,6 +21723,58 @@ function shuffleQuestion(comp) {
   let next = current;
   while (next === current) next = Math.floor(Math.random() * qs.length);
   state.assignments[comp].questionIdx = next;
+  render();
+}
+
+function addExtraSlot() {
+  const allComps = [...new Set(QBANK.map(q => q.competency))].sort();
+  state.extraSlots.push({ competency: allComps[0], questionIdx: 0 });
+  render();
+}
+function removeExtraSlot(i) {
+  state.extraSlots.splice(i, 1);
+  render();
+}
+function updateExtraComp(i, comp) {
+  state.extraSlots[i].competency = comp;
+  state.extraSlots[i].questionIdx = 0;
+  render();
+}
+function stepExtraQuestion(i, dir) {
+  const qs = getQuestions(state.extraSlots[i].competency);
+  const cur = state.extraSlots[i].questionIdx || 0;
+  state.extraSlots[i].questionIdx = Math.max(0, Math.min(qs.length - 1, cur + dir));
+  render();
+}
+function shuffleExtraQuestion(i) {
+  const qs = getQuestions(state.extraSlots[i].competency);
+  if (qs.length <= 1) return;
+  const cur = state.extraSlots[i].questionIdx || 0;
+  let next = cur;
+  while (next === cur) next = Math.floor(Math.random() * qs.length);
+  state.extraSlots[i].questionIdx = next;
+  render();
+}
+
+function openCustomQuestion(comp) {
+  _customInputOpen[comp] = true;
+  render();
+}
+function cancelCustomQuestion(comp) {
+  _customInputOpen[comp] = false;
+  render();
+}
+function saveCustomQuestion(comp) {
+  const id = 'customQ_' + comp.replace(/\W/g, '_');
+  const ta = document.getElementById(id);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) return;
+  if (!state.customQuestions[comp]) state.customQuestions[comp] = [];
+  state.customQuestions[comp].push(text);
+  const allQ = getQuestions(comp);
+  if (!state.assignments[comp]) state.assignments[comp] = { questionIdx: 0 };
+  state.assignments[comp].questionIdx = allQ.length - 1;
+  _customInputOpen[comp] = false;
   render();
 }
 
@@ -21727,6 +21839,11 @@ function copyQuestions() {
     const asgn = state.assignments[comp] || { questionIdx: 0 };
     const question = (qs[asgn.questionIdx] || qs[0] || {}).question || '';
     return `${i + 1}. [${comp}]\n${question}`;
+  });
+  (state.extraSlots || []).forEach((slot, i) => {
+    const qs = getQuestions(slot.competency);
+    const question = (qs[slot.questionIdx] || qs[0] || {}).question || '';
+    lines.push(`${state.selectedComps.length + i + 1}. [${slot.competency}]\n${question}`);
   });
   const text = lines.join('\n\n');
   navigator.clipboard.writeText(text).then(() => {
@@ -22132,19 +22249,33 @@ async function generateDoc() {
     tableHeader: true
   });
 
-  const qRows = state.selectedComps.map(c => {
-    const qs = getQuestions(c);
-    const qIdx = (state.assignments[c] || {}).questionIdx || 0;
-    const q = qs[qIdx] ? qs[qIdx].question : '';
-    return new TableRow({
-      children: [
-        cell([para(c, { bold: true, size: 18 })], { shade: 'FAFAFA', width: 2000 }),
-        cell([para(q, { size: 18 })], { width: 5560 }),
-        cell([para('', { size: 18 })], { width: 800 }),
-        cell([para('', { size: 18 }), para('', { size: 18 })], { width: 1000 })
-      ]
-    });
-  });
+  const qRows = [
+    ...state.selectedComps.map(c => {
+      const qs = getQuestions(c);
+      const qIdx = (state.assignments[c] || {}).questionIdx || 0;
+      const q = qs[qIdx] ? qs[qIdx].question : '';
+      return new TableRow({
+        children: [
+          cell([para(c, { bold: true, size: 18 })], { shade: 'FAFAFA', width: 2000 }),
+          cell([para(q, { size: 18 })], { width: 5560 }),
+          cell([para('', { size: 18 })], { width: 800 }),
+          cell([para('', { size: 18 }), para('', { size: 18 })], { width: 1000 })
+        ]
+      });
+    }),
+    ...(state.extraSlots || []).map(slot => {
+      const qs = getQuestions(slot.competency);
+      const q = qs[slot.questionIdx] ? qs[slot.questionIdx].question : '';
+      return new TableRow({
+        children: [
+          cell([para(slot.competency, { bold: true, size: 18 })], { shade: 'FAFAFA', width: 2000 }),
+          cell([para(q, { size: 18 })], { width: 5560 }),
+          cell([para('', { size: 18 })], { width: 800 }),
+          cell([para('', { size: 18 }), para('', { size: 18 })], { width: 1000 })
+        ]
+      });
+    })
+  ];
 
   children.push(new Table({
     width: { size: 9360, type: WidthType.DXA },
