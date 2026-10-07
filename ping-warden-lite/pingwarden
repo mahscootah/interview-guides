@@ -1,0 +1,108 @@
+#!/bin/bash
+# pingwarden - control awdl-warden and measure latency.
+#
+#   pingwarden on | off | toggle       turn protection on or off
+#   pingwarden pause [minutes]         restore AWDL for a while (default 10)
+#   pingwarden status                  show protection state and interventions
+#   pingwarden ping [host] [count]     latency, jitter and loss (default: gateway, 50)
+#   pingwarden log                     follow the daemon's log
+#
+# Toggling needs no sudo: the root daemon reads the state file this writes.
+
+set -euo pipefail
+
+DIR="${PINGWARDEN_DIR:-/usr/local/var/ping-warden}"
+STATE="$DIR/state"
+STATUS="$DIR/status"
+LABEL="local.pingwarden.awdl-warden"
+
+die() { echo "pingwarden: $*" >&2; exit 1; }
+
+write_state() {
+  [[ -w "$DIR" ]] || die "$DIR is not writable; run 'make install' first"
+  printf '%s\n' "$1" > "$STATE.tmp" && mv "$STATE.tmp" "$STATE"
+}
+
+daemon_running() { [[ -f "$STATUS" ]] && kill -0 "$(status_field pid)" 2>/dev/null; }
+
+status_field() { sed -n "s/^$1=//p" "$STATUS" 2>/dev/null; }
+
+current_mode() {
+  local m; m="$(head -n1 "$STATE" 2>/dev/null || true)"
+  echo "${m%% *}"
+}
+
+# The daemon picks up changes within a second; wait so status is accurate.
+settle() {
+  local want="$1"
+  for _ in {1..30}; do
+    [[ "$(status_field mode)" == "$want" ]] && return 0
+    sleep 0.1
+  done
+  daemon_running || echo "warning: awdl-warden is not running (sudo launchctl kickstart -k system/$LABEL)" >&2
+}
+
+cmd_status() {
+  if ! daemon_running; then
+    echo "awdl-warden: not running"
+    echo "state file:  $(current_mode || echo none)"
+    return 1
+  fi
+  local mode awdl n until started
+  mode="$(status_field mode)"; awdl="$(status_field awdl)"
+  n="$(status_field interventions)"; until="$(status_field pause_until)"
+  started="$(status_field started)"
+  case "$mode" in
+    on)     echo "Ping Protection: ON" ;;
+    paused) echo "Ping Protection: PAUSED until $(date -r "$until" '+%H:%M' 2>/dev/null || echo "$until")" ;;
+    *)      echo "Ping Protection: OFF" ;;
+  esac
+  echo "awdl0:           $awdl"
+  echo "interventions:   $n (since $(date -r "$started" '+%b %d %H:%M' 2>/dev/null || echo "$started"))"
+}
+
+default_target() {
+  local gw
+  gw="$(route -n get default 2>/dev/null | awk '/gateway:/ {print $2; exit}')"
+  echo "${gw:-1.1.1.1}"
+}
+
+cmd_ping() {
+  local host="${1:-$(default_target)}" count="${2:-50}"
+  # macOS ping: -i below 1s needs root, so fall back to 1s when unprivileged.
+  local interval=0.2
+  [[ $EUID -eq 0 ]] || interval=1
+  echo "Pinging $host ($count probes, ${interval}s apart)..."
+  ping -n -c "$count" -i "$interval" "$host" 2>/dev/null | awk -v sent="$count" '
+    /time=/ {
+      match($0, /time=[0-9.]+/); t = substr($0, RSTART + 5, RLENGTH - 5) + 0
+      n++; sum += t; sq += t * t
+      if (n == 1 || t < min) min = t
+      if (t > max) max = t
+      if (n > 1) { d = t - prev; jit += (d < 0 ? -d : d) }
+      prev = t
+      if (t > 50) spikes++
+    }
+    END {
+      if (n == 0) { print "no replies"; exit 1 }
+      avg = sum / n; sd = sqrt(sq / n - avg * avg)
+      printf "latency  min %.1f  avg %.1f  max %.1f  stddev %.1f ms\n", min, avg, max, sd
+      printf "jitter   %.1f ms (mean change between probes)\n", (n > 1 ? jit / (n - 1) : 0)
+      printf "loss     %.1f%% (%d/%d)\n", 100 * (sent - n) / sent, sent - n, sent
+      printf "spikes   %d probes over 50 ms\n", spikes
+    }'
+}
+
+case "${1:-status}" in
+  on)      write_state on;  settle on;  cmd_status ;;
+  off)     write_state off; settle off; cmd_status ;;
+  toggle)  if [[ "$(current_mode)" == on ]]; then "$0" off; else "$0" on; fi ;;
+  pause)
+    mins="${2:-10}"; [[ "$mins" =~ ^[0-9]+$ ]] || die "minutes must be a number"
+    write_state "pause $(( $(date +%s) + mins * 60 ))"; settle paused; cmd_status ;;
+  status)  cmd_status ;;
+  ping)    shift; cmd_ping "$@" ;;
+  log)     log stream --style compact --predicate 'process == "awdl-warden"' ;;
+  -h|--help|help) sed -n '2,10s/^# \{0,1\}//p' "$0" ;;
+  *)       die "unknown command '$1' (try --help)" ;;
+esac

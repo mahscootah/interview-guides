@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>local.pingwarden.awdl-warden</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/local/libexec/awdl-warden</string>
+		<string>-d</string>
+		<string>/usr/local/var/ping-warden</string>
+	</array>
+	<!-- Root is required to change interface flags. -->
+	<key>UserName</key>
+	<string>root</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>ProcessType</key>
+	<string>Interactive</string>
+</dict>
+</plist>
