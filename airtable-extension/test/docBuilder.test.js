@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import JSZip from 'jszip';
+import {JSDOM} from 'jsdom';
 import {buildGuideDocx} from '../frontend/lib/docBuilder.js';
 
 const header = {
@@ -59,5 +60,13 @@ describe('buildGuideDocx', () => {
     const bytes = await buildGuideDocx({header: {...header, brandKey: 'nope'}, panelists: ['Ana'], selections});
     const {zip} = await documentXml(bytes);
     expect(Object.keys(zip.files).some((f) => f.startsWith('word/media/'))).toBe(false);
+  });
+
+  it('replaces control characters (e.g. pasted Word soft breaks) so the XML stays valid', async () => {
+    const dirty = {...selections, competencies: [{...selections.competencies[1], customQuestions: ['Line one\u000Bline two\u0001']}]};
+    const {xml} = await documentXml(await buildGuideDocx({header: {...header, hiringManager: 'Jamie\u000CLee'}, panelists: ['A\u000Bna'], selections: dirty}));
+    const parsed = new new JSDOM('').window.DOMParser().parseFromString(xml, 'application/xml');
+    expect(parsed.getElementsByTagName('parsererror')).toHaveLength(0);
+    expect(decode(textOf(xml))).toContain('Line one line two');
   });
 });

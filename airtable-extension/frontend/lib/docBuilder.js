@@ -27,6 +27,25 @@ const NEXT_STEPS = [
   ['Attend Debrief', 'You may be invited to an interview debrief. If so, please attend and be prepared to talk through your interview feedback.'],
 ];
 
+// Characters XML 1.0 forbids. Word's Shift+Enter (\v) arrives this way when text is pasted.
+const XML_INVALID = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g;
+const cleanText = (value) => (typeof value === 'string' ? value.replace(XML_INVALID, ' ') : value);
+const cleanAll = (list) => list.map(cleanText);
+
+function cleanInput({header, panelists, selections}) {
+  return {
+    header: Object.fromEntries(Object.entries(header).map(([k, v]) => [k, cleanText(v)])),
+    panelists: cleanAll(panelists),
+    selections: {
+      ...selections,
+      competencies: selections.competencies.map((c) => ({
+        ...c, name: cleanText(c.name), panelist: cleanText(c.panelist),
+        questions: cleanAll(c.questions), customQuestions: cleanAll(c.customQuestions),
+      })),
+    },
+  };
+}
+
 function base64ToBytes(base64) {
   const binary = atob(base64);
   return Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
@@ -153,7 +172,8 @@ function pageFooter() {
 }
 
 /** Builds the panel interview guide. Returns the .docx bytes. */
-export async function buildGuideDocx({header, panelists, selections}) {
+export async function buildGuideDocx(input) {
+  const {header, panelists, selections} = cleanInput(input);
   const doc = new Document({
     styles: {default: {document: {run: {font: 'Arial', size: 20}}}},
     sections: [{
