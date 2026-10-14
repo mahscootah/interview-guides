@@ -23,6 +23,15 @@ describe('createStore', () => {
     expect(a).not.toBe(b);
   });
 
+  it('refuses a file that would exceed maxTotalBytes until older ones expire', () => {
+    let t = 0;
+    const store = createStore({ttlMs: 100, now: () => t, maxTotalBytes: 5});
+    expect(store.put(new Uint8Array(4), 'a.docx')).toMatch(/^[a-f0-9]{32}$/);
+    expect(store.put(new Uint8Array(4), 'b.docx')).toBeNull();
+    t += 100;
+    expect(store.put(new Uint8Array(4), 'b.docx')).toMatch(/^[a-f0-9]{32}$/);
+  });
+
   it('returns null for unknown ids', () => {
     expect(createStore().get('0'.repeat(32))).toBeNull();
   });

@@ -76,6 +76,34 @@ describe('file drop app', () => {
     expect((await got.arrayBuffer()).byteLength).toBe(0);
   });
 
+  it('serves non-Latin-1 file names with an ASCII fallback and RFC 5987 name', async () => {
+    const name = 'Director – Product “Footwear” 🥾.docx';
+    const {url} = await (await upload(docxBytes(), {filename: name})).json();
+    const got = await fetch(`${base}/files/${url.split('/').pop()}`);
+    expect(got.status).toBe(200);
+    expect(got.headers.get('content-disposition')).toBe(
+      `attachment; filename="Director _ Product _Footwear_ __.docx"; filename*=UTF-8''${encodeURIComponent(name)}`,
+    );
+    expect((await fetch(`${base}/health`)).status).toBe(200);
+  });
+
+  it('rejects uploads once the store is full with 503', async () => {
+    const full = createStore({maxTotalBytes: 20});
+    const app = createApp({store: full, allowedOrigin: /.*/, maxBytes: 64, publicBaseUrl: 'https://d'});
+    const srv = createServer(app);
+    await new Promise((resolve) => srv.listen(0, resolve));
+    const url = `http://127.0.0.1:${srv.address().port}/files?filename=a.docx`;
+    const post = () => fetch(url, {method: 'POST', headers: {'Content-Type': DOCX_TYPE, Origin: ORIGIN}, body: docxBytes()});
+    expect((await post()).status).toBe(201);
+    expect((await post()).status).toBe(503);
+    await new Promise((resolve) => srv.close(resolve));
+  });
+
+  it('rejects an oversized Content-Length before reading the body', async () => {
+    const res = await upload(docxBytes(100));
+    expect(res.status).toBe(413);
+  });
+
   it('rejects uploads from other origins', async () => {
     const res = await upload(docxBytes(), {origin: 'https://evil.example.com'});
     expect(res.status).toBe(403);

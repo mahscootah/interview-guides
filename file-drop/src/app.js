@@ -61,23 +61,32 @@ async function handleUpload(req, res, url, ctx) {
   const filename = url.searchParams.get('filename');
   if (!isValidFilename(filename)) return send(res, 400, {error: 'filename must end in .docx'}, cors);
   if (req.headers['content-type'] !== DOCX_TYPE) return send(res, 400, {error: 'docx only'}, cors);
+  if (Number(req.headers['content-length']) > ctx.maxBytes) return send(res, 413, {error: 'file too large'}, cors);
   try {
     const bytes = await readBody(req, ctx.maxBytes);
     if (!startsWithZipMagic(bytes)) return send(res, 400, {error: 'not a docx file'}, cors);
     const id = ctx.store.put(bytes, filename);
+    if (!id) return send(res, 503, {error: 'busy, try again in a few minutes'}, cors);
     return send(res, 201, {url: `${ctx.publicBaseUrl}/files/${id}`}, cors);
   } catch (err) {
     return send(res, err.status === 413 ? 413 : 400, {error: err.status === 413 ? 'file too large' : 'bad upload'}, cors);
   }
 }
 
+// Header values must be Latin-1, so send an ASCII fallback plus the RFC 5987 UTF-8 name.
+function contentDisposition(filename) {
+  const name = filename.replace(/["\\\r\n]/g, '').replace(/\s+/g, ' ');
+  const ascii = name.replace(/[^\x20-\x7e]/g, '_');
+  if (ascii === name) return `attachment; filename="${name}"`;
+  return `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`;
+}
+
 function handleDownload(res, id, store) {
   const entry = ID_PATTERN.test(id) ? store.get(id) : null;
   if (!entry) return send(res, 404, {error: 'not found'});
-  const safeName = entry.filename.replace(/["\r\n]/g, '').replace(/\s+/g, ' ');
   return send(res, 200, entry.bytes, {
     'Content-Type': DOCX_TYPE,
-    'Content-Disposition': `attachment; filename="${safeName}"`,
+    'Content-Disposition': contentDisposition(entry.filename),
     'Cache-Control': 'no-store',
   });
 }
@@ -88,17 +97,27 @@ function handleDownload(res, id, store) {
  */
 export function createApp(ctx) {
   return (req, res) => {
-    const url = new URL(req.url, 'http://localhost');
-    const parts = url.pathname.split('/').filter(Boolean);
-    if (req.method === 'OPTIONS') return send(res, 204, undefined, corsHeaders(req, ctx.allowedOrigin));
-    if (req.method === 'GET' && url.pathname === '/health') {
-      return send(res, 200, {ok: true}, corsHeaders(req, ctx.allowedOrigin));
+    // A thrown error must never take the process (and everyone's pending files) down.
+    const fail = () => (res.headersSent ? res.destroy() : send(res, 500, {error: 'server error'}));
+    try {
+      Promise.resolve(route(req, res, ctx)).catch(fail);
+    } catch {
+      fail();
     }
-    if (req.method === 'POST' && url.pathname === '/files') return handleUpload(req, res, url, ctx);
-    const isRead = req.method === 'GET' || req.method === 'HEAD';
-    if (isRead && parts.length === 2 && parts[0] === 'files') {
-      return handleDownload(res, parts[1], ctx.store);
-    }
-    return send(res, 404, {error: 'not found'});
   };
+}
+
+function route(req, res, ctx) {
+  const url = new URL(req.url, 'http://localhost');
+  const parts = url.pathname.split('/').filter(Boolean);
+  if (req.method === 'OPTIONS') return send(res, 204, undefined, corsHeaders(req, ctx.allowedOrigin));
+  if (req.method === 'GET' && url.pathname === '/health') {
+    return send(res, 200, {ok: true}, corsHeaders(req, ctx.allowedOrigin));
+  }
+  if (req.method === 'POST' && url.pathname === '/files') return handleUpload(req, res, url, ctx);
+  const isRead = req.method === 'GET' || req.method === 'HEAD';
+  if (isRead && parts.length === 2 && parts[0] === 'files') {
+    return handleDownload(res, parts[1], ctx.store);
+  }
+  return send(res, 404, {error: 'not found'});
 }
