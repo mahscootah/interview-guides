@@ -111,7 +111,7 @@ existing field stay untouched.
 |---|---|
 | Position Title | guide title (required) |
 | Req # | printed in the header |
-| Brand | template choice (required) |
+| Brand | template choice (blank → Columbia) |
 | Hiring Manager | printed in the header |
 | Panel Interview Format | printed in the header (Virtual (Microsoft Teams) / In-Person) |
 | # of Panelists | starting number of panelist boxes when Panelists is empty |
@@ -124,6 +124,7 @@ Brand mapping (values are trimmed and matched case-insensitively):
 | `MHW`, `Mountain Hardwear` | mountainhardwear |
 | `prAna` | prana |
 | `SOREL` | sorel |
+| blank / empty | columbia (default) |
 | anything else | not mapped: the CES picks a template from a dropdown, and the choice is saved in Selections |
 
 ### 3.4 Selections format (version 1)
@@ -176,7 +177,7 @@ aren't allowed in file names removed.
 
 | Situation | Behaviour |
 |---|---|
-| No linked requisition, or a missing Position Title or Brand | Show a message naming what is missing instead of the builder (an unmapped Brand gets the template dropdown instead) |
+| No linked requisition, or a missing Position Title | Show a message naming what is missing instead of the builder. A blank Brand is not an error: it defaults to Columbia. An unrecognized Brand shows the template dropdown. |
 | No competencies, or a competency with no question or no panelist | Generate disabled, with a hint naming what is missing |
 | File drop still starting | "Preparing…", retrying with backoff for up to ~60 seconds |
 | File drop unreachable, or upload fails | "Couldn't attach the guide" plus a **Download .docx** button for manual upload |
@@ -224,7 +225,7 @@ fallback before building anything else.
 
 ### 7.2 Automated tests
 
-- Brand mapper: every current Brand value, plus unknown and blank values.
+- Brand mapper: every current Brand value, blank values (→ columbia) and unknown values (→ dropdown).
 - Selections codec: saving and loading give back the same picks, a wrong version is
   rejected, and questions missing from the bank become custom questions.
 - Document builder: headings, panelist sections and question order are correct (checked by
