@@ -55,7 +55,7 @@ CES opens the "Guide Builder" Interface page (TA Airtable - Live)
 ┌──────────────────────────────────────────────┐
 │ Guide Builder Interface extension (React,    │
 │ hosted by Airtable, pinned pre-release SDK)  │
-│  • guide list → CES picks or creates a guide │
+│  • start: New Guide, or reopen a guide       │
 │  • reads the guide's linked requisition      │
 │  • CES picks competencies → questions →      │
 │    panelist; adds HM-specified questions     │
@@ -82,7 +82,7 @@ Airtable permissions; Airtable copies the file into its own storage.
 | **Brand mapper** | Maps Master Tracker Brand values to one of four templates (see §3.3) | nothing |
 | **Selections codec** | Serialize and parse the CES's picks to and from the Selections field, with a version number | nothing |
 | **Document builder** | Turns header details plus selections into a `.docx` file (the web app's docx code, moved into a module) | question bank, brand mapper |
-| **Guide list** | Lists Interview Guides newest first, with search; creates a guide for a chosen requisition; remembers the open guide in the URL (`useSearchParams`, key `guide`) | Blocks SDK |
+| **Start screen** | New Guide panel (requisition search → round → create, shown first); recent guides list with search; remembers the open guide in the URL (`useSearchParams`, key `guide`) | Blocks SDK |
 | **Builder UI** | The React screens the CES uses to edit one guide (§4) | all of the above, Blocks SDK |
 | **Attach client** | Wakes the file drop, uploads the file, writes the URL to Guide File, handles retries and the fallback | Blocks SDK, file drop |
 | **File drop service** | `POST /files` (stores a .docx, returns a URL), `GET /files/:id` (serves it once it's stored, until it expires), `GET /health` (wake-up) | Render |
@@ -168,15 +168,18 @@ is shown as a custom question.
 The Guide Builder is its own full-page Interface page, added to the Interfaces the CES
 already use. Inside it the extension shows two screens.
 
-**Screen A: guide list**
+**Screen A: start (New Guide first)**
 
-1. A table of Interview Guides, newest first: Guide Name, Position Title, Req #, Interview
-   Round, Last Generated. A search box filters by Guide Name, Position Title or Req #.
-2. **New guide:** the CES searches Master Tracker by Position Title or Req #, picks the
-   requisition, picks the Interview Round, and the extension creates the record with Guide
-   Name `<Position Title> – <Interview Round>` (editable). It then opens that guide.
-3. Clicking a guide opens it (Screen B). The open guide's record ID is stored in the URL, so
-   a browser refresh or a shared link reopens the same guide.
+The page opens with **New Guide** as the main action; existing guides sit below it.
+
+1. **New Guide panel (top, focused on load):** a search box over Master Tracker by Position
+   Title or Req #. The CES picks the requisition, picks the Interview Round, and confirms the
+   Guide Name (pre-filled `<Position Title> – <Interview Round>`). The extension creates the
+   Interview Guides record linked to that requisition and opens it straight into Screen B.
+2. **Recent guides (below):** Interview Guides newest first (Guide Name, Position Title,
+   Req #, Interview Round, Last Generated), with its own search box. Clicking one opens it.
+3. The open guide's record ID is stored in the URL, so a browser refresh or a shared link
+   reopens the same guide.
 
 Guides created elsewhere (for example with Airtable's **+ Add** button on a requisition's
 Interview Guides list) appear in this list automatically.
@@ -208,7 +211,7 @@ aren't allowed in file names removed.
 
 | Situation | Behaviour |
 |---|---|
-| Guide's record ID in the URL no longer exists (deleted guide) | Return to the guide list with "That guide no longer exists" |
+| Guide's record ID in the URL no longer exists (deleted guide) | Return to the start screen with "That guide no longer exists" |
 | No linked requisition, or a missing Position Title | Show a message naming what is missing instead of the builder. A blank Brand is not an error: it defaults to Columbia. An unrecognized Brand shows the template dropdown. |
 | No competencies, or a competency with no question or no panelist | Generate disabled, with a hint naming what is missing |
 | File drop still starting | "Preparing…", retrying with backoff for up to ~60 seconds |
@@ -303,6 +306,6 @@ added to TA Airtable - Live only after that, with Scott's sign-off.
   (the user believes so, and Airtable's docs list all plans). Checked in §7.1.
 - **Pre-release SDK risk:** the Interface extension SDK is not a stable release. The version
   is pinned exactly; upgrading is a deliberate task that reruns the sandbox checks in §7.3.
-  If Airtable changes or withdraws it, the guide list and builder must be reworked.
+  If Airtable changes or withdraws it, the start screen and builder must be reworked.
 - Pick the sandbox base for development (e.g. "(10/6 TRAINING SANDBOX) TA Airtable").
 - Revoke the personal access token shared during design. Nothing in this design uses it.
