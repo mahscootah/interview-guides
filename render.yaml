@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: interview-guide-file-drop
+    runtime: node
+    plan: free
+    rootDir: file-drop
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/server.js
+    healthCheckPath: /health
+    autoDeploy: false
