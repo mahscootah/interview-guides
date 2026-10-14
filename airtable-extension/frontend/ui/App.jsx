@@ -60,10 +60,11 @@ export function App() {
   if (!requisition.positionTitle) return <BackWithMessage onBack={backToStart} text="The linked requisition has no Position Title. Add one in Master Tracker, then reopen this guide." />;
 
   const {selections, warning} = parseSelections(guide.selectionsText);
+  const savePicks = ({panelists: p, selections: s}) => guideTable.updateRecordAsync(guide.id, savePicksFields({panelistsText: formatPanelists(p), selectionsText: serializeSelections(s)}));
   const onGenerate = ({panelists, selections: picks, brandKey}) => generateGuide({
     input: {header: {...requisition, round: guide.round, brandKey}, panelists, selections: picks, existingFiles: guide.files},
     deps: {
-      savePicks: ({panelists: p, selections: s}) => guideTable.updateRecordAsync(guide.id, savePicksFields({panelistsText: formatPanelists(p), selectionsText: serializeSelections(s)})),
+      savePicks,
       buildDocx: buildGuideDocx,
       upload: fileDrop.upload,
       saveGenerated: (files) => guideTable.updateRecordAsync(guide.id, generatedFields({files, userId: session.currentUser.id, at: new Date()})),
@@ -73,7 +74,7 @@ export function App() {
   return (
     <BuilderScreen key={guide.id} requisition={requisition} guide={guide}
       initialPanelists={initialPanelists(guide.panelistsText, requisition.panelistCount)}
-      initialSelections={selections} warning={warning} onBack={backToStart} onGenerate={onGenerate} />
+      initialSelections={selections} warning={warning} onBack={backToStart} onSave={savePicks} onGenerate={onGenerate} />
   );
 }
 

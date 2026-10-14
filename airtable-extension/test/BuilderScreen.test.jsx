@@ -14,9 +14,10 @@ const guide = {id: 'g1', name: 'Sr PM – Panel', round: 'Panel'};
 function setup(props = {}) {
   const onGenerate = vi.fn(async () => ({status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx'}));
   const onBack = vi.fn();
+  const onSave = vi.fn(async () => {});
   render(<BuilderScreen requisition={requisition} guide={guide} initialPanelists={['', '']}
-    initialSelections={emptySelections()} warning={null} onBack={onBack} onGenerate={onGenerate} {...props} />);
-  return {onGenerate, onBack};
+    initialSelections={emptySelections()} warning={null} onBack={onBack} onSave={onSave} onGenerate={onGenerate} {...props} />);
+  return {onGenerate, onBack, onSave};
 }
 
 function fillMinimalGuide() {
@@ -92,5 +93,23 @@ describe('BuilderScreen', () => {
     const {onBack} = setup();
     fireEvent.click(screen.getByRole('button', {name: '← Back to guides'}));
     expect(onBack).toHaveBeenCalled();
+  });
+
+  it('saves unsaved picks before going back', async () => {
+    const {onBack, onSave} = setup();
+    fireEvent.change(screen.getByLabelText('Panelist 1'), {target: {value: 'Ana'}});
+    fireEvent.click(screen.getByLabelText('Teamwork'));
+    fireEvent.click(screen.getByRole('button', {name: '← Back to guides'}));
+    await waitFor(() => expect(onBack).toHaveBeenCalled());
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({panelists: ['Ana', '']}));
+    expect(onSave.mock.calls[0][0].selections.competencies.map((c) => c.name)).toEqual(['Teamwork']);
+  });
+
+  it('stays on the guide and says so when saving on the way back fails', async () => {
+    const {onBack} = setup({onSave: vi.fn(async () => { throw new Error('No permission'); })});
+    fireEvent.click(screen.getByLabelText('Teamwork'));
+    fireEvent.click(screen.getByRole('button', {name: '← Back to guides'}));
+    await waitFor(() => expect(screen.getByText("Couldn't save your picks: No permission")).toBeTruthy());
+    expect(onBack).not.toHaveBeenCalled();
   });
 });
