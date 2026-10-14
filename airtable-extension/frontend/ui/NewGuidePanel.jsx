@@ -10,6 +10,7 @@ export function NewGuidePanel({requisitions, onCreate}) {
   const [name, setName] = useState('');
   const [nameEdited, setNameEdited] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
   const matches = filterRequisitions(requisitions, query);
 
   const pick = (req) => {
@@ -22,8 +23,11 @@ export function NewGuidePanel({requisitions, onCreate}) {
   };
   const create = async () => {
     setBusy(true);
+    setError(null);
     try {
       await onCreate({requisitionId: picked.id, round, name: name.trim()});
+    } catch (err) {
+      setError(`Couldn't create the guide: ${err.message}`);
     } finally {
       setBusy(false);
     }
@@ -55,6 +59,7 @@ export function NewGuidePanel({requisitions, onCreate}) {
           <p>
             <button type="button" className="go" disabled={busy || !name.trim()} onClick={create}>Create guide</button>
           </p>
+          {error && <p className="problems">{error}</p>}
         </>
       )}
     </section>

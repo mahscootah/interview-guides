@@ -53,4 +53,14 @@ describe('generateGuide', () => {
     expect(result.status).toBe('download');
     expect(result.error).toBe('No permission');
   });
+
+  it('still builds and offers a download when saving picks fails', async () => {
+    const {calls, deps: d} = deps({savePicks: vi.fn(async () => { throw new Error('No permission'); })});
+    const result = await generateGuide({input, deps: d});
+    expect(result).toEqual({
+      status: 'download', filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([9]),
+      error: 'Your picks were not saved (No permission)',
+    });
+    expect(calls).toEqual(['buildDocx']);
+  });
 });

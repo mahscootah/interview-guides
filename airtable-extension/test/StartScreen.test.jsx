@@ -60,4 +60,13 @@ describe('StartScreen', () => {
     fireEvent.click(screen.getByRole('button', {name: /Store Manager – Panel/}));
     expect(onOpen).toHaveBeenCalledWith('g1');
   });
+
+  it('shows the error when creating the guide fails', async () => {
+    setup({onCreate: vi.fn(async () => { throw new Error('You do not have permission to create records'); })});
+    fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'product'}});
+    fireEvent.click(screen.getByRole('button', {name: /Senior Product Manager/}));
+    fireEvent.click(screen.getByRole('button', {name: 'Create guide'}));
+    await waitFor(() => expect(screen.getByText("Couldn't create the guide: You do not have permission to create records")).toBeTruthy());
+    expect(screen.getByRole('button', {name: 'Create guide'}).disabled).toBe(false);
+  });
 });
