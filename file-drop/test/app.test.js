@@ -68,6 +68,14 @@ describe('file drop app', () => {
     expect([...new Uint8Array(await got.arrayBuffer())]).toEqual([...docxBytes()]);
   });
 
+  it('answers HEAD for a stored file with headers and no body', async () => {
+    const {url} = await (await upload(docxBytes())).json();
+    const got = await fetch(`${base}/files/${url.split('/').pop()}`, {method: 'HEAD'});
+    expect(got.status).toBe(200);
+    expect(got.headers.get('content-type')).toBe(DOCX_TYPE);
+    expect((await got.arrayBuffer()).byteLength).toBe(0);
+  });
+
   it('rejects uploads from other origins', async () => {
     const res = await upload(docxBytes(), {origin: 'https://evil.example.com'});
     expect(res.status).toBe(403);

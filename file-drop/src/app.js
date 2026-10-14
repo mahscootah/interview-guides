@@ -95,7 +95,8 @@ export function createApp(ctx) {
       return send(res, 200, {ok: true}, corsHeaders(req, ctx.allowedOrigin));
     }
     if (req.method === 'POST' && url.pathname === '/files') return handleUpload(req, res, url, ctx);
-    if (req.method === 'GET' && parts.length === 2 && parts[0] === 'files') {
+    const isRead = req.method === 'GET' || req.method === 'HEAD';
+    if (isRead && parts.length === 2 && parts[0] === 'files') {
       return handleDownload(res, parts[1], ctx.store);
     }
     return send(res, 404, {error: 'not found'});
