@@ -6,6 +6,7 @@ import {initialPanelists, formatPanelists} from '../lib/panelists.js';
 import {buildGuideDocx} from '../lib/docBuilder.js';
 import {createFileDropClient} from '../lib/fileDropClient.js';
 import {generateGuide} from '../lib/generateGuide.js';
+import {resolveGuide, NEW_GUIDE_WAIT_MS} from '../lib/guideLookup.js';
 import {FILE_DROP_URL} from '../config.js';
 import {StartScreen} from './StartScreen.jsx';
 import {BuilderScreen} from './BuilderScreen.jsx';
@@ -25,6 +26,7 @@ export function App() {
   const guideRecords = useRecords(guideTable);
   const {searchParams, setSearchParamsAsync} = useSearchParams();
   const [notice, setNotice] = useState(null);
+  const [pendingId, setPendingId] = useState(null);
 
   useEffect(() => { fileDrop.wake(); }, []);
 
@@ -32,14 +34,21 @@ export function App() {
   const reqById = useMemo(() => new Map(requisitions.map((r) => [r.id, r])), [requisitions]);
   const guides = useMemo(() => (guideRecords ?? []).map(readGuide), [guideRecords]);
   const guideRows = guides.map((g) => ({...g, positionTitle: reqById.get(g.requisitionId)?.positionTitle ?? '', reqNumber: reqById.get(g.requisitionId)?.reqNumber ?? ''}));
-  const guide = searchParams.guide ? guides.find((g) => g.id === searchParams.guide) ?? null : null;
-  const guideMissing = Boolean(searchParams.guide && guideRecords && !guide);
+  const lookup = resolveGuide({requestedId: searchParams.guide, guides, loaded: Boolean(guideRecords), pendingId});
+  const guide = lookup.status === 'open' ? lookup.guide : null;
 
   useEffect(() => {
-    if (!guideMissing) return;
+    if (lookup.status !== 'missing') return;
     setNotice('That guide no longer exists.');
     setSearchParamsAsync({});
-  }, [guideMissing, setSearchParamsAsync]);
+  }, [lookup.status, setSearchParamsAsync]);
+
+  useEffect(() => {
+    if (lookup.status === 'open' && pendingId) setPendingId(null);
+    if (lookup.status !== 'waiting') return undefined;
+    const timer = setTimeout(() => setPendingId(null), NEW_GUIDE_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [lookup.status, pendingId]);
 
   if (!reqTable) return <MissingSetup what={`the "${TABLES.requisitions}" table`} />;
   if (!guideTable) return <MissingSetup what={`the "${TABLES.guides}" table`} />;
@@ -48,9 +57,13 @@ export function App() {
   const backToStart = () => setSearchParamsAsync({});
   const createGuide = async ({requisitionId, round, name}) => {
     const id = await guideTable.createRecordAsync(newGuideFields({name, requisitionId, round}));
+    setPendingId(id);
     openGuide(id);
   };
 
+  if (lookup.status === 'waiting' || lookup.status === 'loading') {
+    return <p className="muted" role="status">Opening the guide…</p>;
+  }
   if (!guide) {
     return <StartScreen requisitions={requisitions} guides={guideRows} notice={notice} onCreate={createGuide} onOpen={openGuide} />;
   }
