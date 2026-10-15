@@ -15,9 +15,11 @@ function setup(props = {}) {
   const onGenerate = vi.fn(async () => ({status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx'}));
   const onBack = vi.fn();
   const onSave = vi.fn(async () => {});
+  const onAttached = vi.fn();
   render(<BuilderScreen requisition={requisition} guide={guide} initialPanelists={['', '']}
-    initialSelections={emptySelections()} warning={null} onBack={onBack} onSave={onSave} onGenerate={onGenerate} {...props} />);
-  return {onGenerate, onBack, onSave};
+    initialSelections={emptySelections()} warning={null} onBack={onBack} onSave={onSave} onGenerate={onGenerate}
+    onAttached={onAttached} {...props} />);
+  return {onGenerate, onBack, onSave, onAttached};
 }
 
 function fillMinimalGuide() {
@@ -64,13 +66,21 @@ describe('BuilderScreen', () => {
     await waitFor(() => expect(screen.getByText('Guide attached ✓')).toBeTruthy());
   });
 
-  it('offers a download when attaching fails', async () => {
+  it('offers a download when attaching fails and stays on the guide', async () => {
     const onGenerate = vi.fn(async () => ({status: 'download', filename: 'f.docx', bytes: new Uint8Array([1]), error: 'unreachable'}));
-    setup({onGenerate});
+    const {onAttached} = setup({onGenerate});
     fillMinimalGuide();
     fireEvent.click(screen.getByRole('button', {name: 'Generate guide'}));
     await waitFor(() => expect(screen.getByRole('button', {name: 'Download .docx'})).toBeTruthy());
     expect(screen.getByText(/Couldn't attach the guide: unreachable/)).toBeTruthy();
+    expect(onAttached).not.toHaveBeenCalled();
+  });
+
+  it('reports a successful attach so the app can return to the guide list', async () => {
+    const {onAttached} = setup();
+    fillMinimalGuide();
+    fireEvent.click(screen.getByRole('button', {name: 'Generate guide'}));
+    await waitFor(() => expect(onAttached).toHaveBeenCalledWith('Sr PM - Panel Interview Guide.docx'));
   });
 
   it('flags a competency whose panelist was removed', () => {

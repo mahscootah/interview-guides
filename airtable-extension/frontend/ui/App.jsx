@@ -39,7 +39,7 @@ export function App() {
 
   useEffect(() => {
     if (lookup.status !== 'missing') return;
-    setNotice('That guide no longer exists.');
+    setNotice({text: 'That guide no longer exists.', tone: 'problem'});
     setSearchParamsAsync({});
   }, [lookup.status, setSearchParamsAsync]);
 
@@ -87,7 +87,8 @@ export function App() {
   return (
     <BuilderScreen key={guide.id} requisition={requisition} guide={guide}
       initialPanelists={initialPanelists(guide.panelistsText, requisition.panelistCount)}
-      initialSelections={selections} warning={warning} onBack={backToStart} onSave={savePicks} onGenerate={onGenerate} />
+      initialSelections={selections} warning={warning} onBack={backToStart} onSave={savePicks} onGenerate={onGenerate}
+      onAttached={() => { setNotice({text: `Guide attached to "${guide.name}" ✓`, tone: 'ok'}); backToStart(); }} />
   );
 }
 

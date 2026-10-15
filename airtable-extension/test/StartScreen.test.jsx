@@ -74,8 +74,15 @@ describe('StartScreen', () => {
     expect(screen.getByText('No requisitions match "zzz".')).toBeTruthy();
   });
 
+  it('shows a success notice in the ok style', () => {
+    setup({notice: {text: 'Guide attached to "Store Manager – Panel" ✓', tone: 'ok'}});
+    const status = screen.getByRole('status');
+    expect(status.textContent).toBe('Guide attached to "Store Manager – Panel" ✓');
+    expect(status.className).toBe('ok');
+  });
+
   it('opens a recent guide and shows notices', () => {
-    const {onOpen} = setup({notice: 'That guide no longer exists.'});
+    const {onOpen} = setup({notice: {text: 'That guide no longer exists.', tone: 'problem'}});
     expect(screen.getByRole('status').textContent).toBe('That guide no longer exists.');
     fireEvent.click(screen.getByRole('button', {name: /Store Manager – Panel/}));
     expect(onOpen).toHaveBeenCalledWith('g1');

@@ -27,7 +27,7 @@ function BrandLine({requisition, selections, onOverride}) {
   );
 }
 
-export function BuilderScreen({requisition, guide, initialPanelists, initialSelections, warning, onBack, onSave, onGenerate}) {
+export function BuilderScreen({requisition, guide, initialPanelists, initialSelections, warning, onBack, onSave, onGenerate, onAttached}) {
   const [panelists, setPanelists] = useState(initialPanelists);
   const [selections, setSelections] = useState(initialSelections);
   const [busy, setBusy] = useState(false);
@@ -56,8 +56,11 @@ export function BuilderScreen({requisition, guide, initialPanelists, initialSele
     setBusy(true);
     try {
       const outcome = await onGenerate({panelists, selections, brandKey});
-      if (outcome.status === 'attached') setChanged(false);
       setResult(outcome);
+      if (outcome.status === 'attached') {
+        setChanged(false);
+        onAttached?.(outcome.filename);
+      }
     } catch (err) {
       setResult({status: 'download', filename: '', bytes: null, error: err.message});
     } finally {
