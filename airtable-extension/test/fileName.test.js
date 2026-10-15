@@ -2,6 +2,13 @@ import {describe, it, expect} from 'vitest';
 import {guideFileName, defaultGuideName} from '../frontend/lib/fileName.js';
 
 describe('guideFileName', () => {
+  it('stamps the local date and time when given one, so repeat files differ', () => {
+    expect(guideFileName('Sr Product Manager', 'Panel', new Date(2026, 9, 15, 13, 5)))
+      .toBe('Sr Product Manager - Panel Interview Guide 2026-10-15 1.05 PM.docx');
+    expect(guideFileName('Sr Product Manager', 'Final', new Date(2026, 0, 2, 0, 30)))
+      .toBe('Sr Product Manager - Final Interview Guide 2026-01-02 12.30 AM.docx');
+  });
+
   it('uses title and round', () => {
     expect(guideFileName('Sr Product Manager', 'Panel')).toBe('Sr Product Manager - Panel Interview Guide.docx');
   });

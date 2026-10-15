@@ -75,7 +75,7 @@ export function App() {
   const {selections, warning} = parseSelections(guide.selectionsText);
   const savePicks = ({panelists: p, selections: s}) => guideTable.updateRecordAsync(guide.id, savePicksFields({panelistsText: formatPanelists(p), selectionsText: serializeSelections(s)}));
   const onGenerate = ({panelists, selections: picks, brandKey}) => generateGuide({
-    input: {header: {...requisition, round: guide.round, brandKey}, panelists, selections: picks, existingFiles: guide.files},
+    input: {header: {...requisition, round: guide.round, brandKey}, panelists, selections: picks, existingFiles: guide.files, generatedAt: new Date()},
     deps: {
       savePicks,
       buildDocx: buildGuideDocx,

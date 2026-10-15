@@ -21,6 +21,13 @@ function deps(over = {}) {
 }
 
 describe('generateGuide', () => {
+  it('stamps the file name with the generation time when one is given', async () => {
+    const {deps: d} = deps();
+    const result = await generateGuide({input: {...input, generatedAt: new Date(2026, 9, 15, 9, 41)}, deps: d});
+    expect(result).toEqual({status: 'attached', filename: 'Sr PM - Panel Interview Guide 2026-10-15 9.41 AM.docx'});
+    expect(d.upload).toHaveBeenCalledWith(new Uint8Array([9]), 'Sr PM - Panel Interview Guide 2026-10-15 9.41 AM.docx');
+  });
+
   it('saves picks before building, then uploads and appends the attachment', async () => {
     const {calls, deps: d} = deps();
     const result = await generateGuide({input, deps: d});
