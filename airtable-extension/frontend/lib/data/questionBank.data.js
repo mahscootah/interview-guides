@@ -136,7 +136,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Driving Engagement",
     "definition": "Create a positive workplace where everyone can thrive and do their best work. Employees ’ diverse thoughts and ideas are heard and considered.",
-    "question": "Give an example of a time you had to coach a colleague or peer. How do you balance between positive rein forcement and constructive feedback?"
+    "question": "Give an example of a time you had to coach a colleague or peer. How do you balance between positive reinforcement and constructive feedback?"
   },
   {
     "group": "Leadership Capabilities",
@@ -1360,7 +1360,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Professionalism",
     "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
-    "question": "Tell me about a time in which you had to be the face of your team/company. Ho w did you ensure you were prepared and representing the team/company well?"
+    "question": "Tell me about a time in which you had to be the face of your team/company. How did you ensure you were prepared and representing the team/company well?"
   },
   {
     "group": "Behavioral Skills",
