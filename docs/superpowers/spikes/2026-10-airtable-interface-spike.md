@@ -41,3 +41,18 @@ Decision: proceed.
 - `airtable-extension` must use extension `blkXfl4g8O4rOqeE2`: add `block.json` (`"frontendEntry": "./frontend/index.jsx"`) and `.block/remote.json` (`{"blockId": "blkXfl4g8O4rOqeE2", "baseId": "NONE"}`).
 - The live page needs the same properties-panel settings, made by hand. Add them to the go-live checklist.
 - The spike release (v1) is live on the sandbox page until the real extension is released over it.
+
+## Sandbox run, 2026-10-15 (development build, Scott)
+
+| # | Check | Result | Notes |
+|---|---|---|---|
+| 1 | Start screen: New guide first, search focused | pass | |
+| 2 | Search by title and Req #, pick, create | pass after fix | Match list stayed open and hid the Create controls (fixed b18a7c6). Create showed a false "That guide no longer exists." because the new record reached `useRecords` late (fixed f6d4f76). |
+| 3 | Build and Generate; file opens in Word | pass | |
+| 4 | Reopen restores picks; Generate again appends a file | pass | Questions whose wording was later corrected reopen as custom questions, not lost. |
+| 5 | Second guide (Final) on the same requisition | pass | "Opening the guide…" shown briefly. |
+| 6 | File drop suspended: error plus Download .docx | pass | Downloaded file opened. |
+| 7 | Damaged Selections: builder opens empty with reset warning | pass | |
+| 8 | Blank Brand: "Columbia Sportswear (default)" | pass | |
+
+Changes requested during the run: return to the guide list after a successful Generate (aa6fc1a); fix split words in the question bank (4fbbd0d, 70595fe); move the question bank into an Airtable table (to do); put the date in generated file names (to do).
