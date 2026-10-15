@@ -36,17 +36,27 @@ export function NewGuidePanel({requisitions, onCreate}) {
   return (
     <section className="card primary">
       <h2>New guide</h2>
-      <label htmlFor="gb-req">Find requisition</label>
-      <input id="gb-req" type="text" autoFocus value={query} placeholder="Position title or Req #"
-        onChange={(e) => setQuery(e.target.value)} />
-      {query.trim() && !matches.length && <p className="muted">No requisitions match "{query.trim()}".</p>}
-      <div className="list">
-        {matches.map((r) => (
-          <button key={r.id} type="button" aria-pressed={picked?.id === r.id} onClick={() => pick(r)}>
-            {r.positionTitle || '(no title)'} <span className="muted">{r.reqNumber}</span>
-          </button>
-        ))}
-      </div>
+      {!picked && (
+        <>
+          <label htmlFor="gb-req">Find requisition</label>
+          <input id="gb-req" type="text" autoFocus value={query} placeholder="Position title or Req #"
+            onChange={(e) => setQuery(e.target.value)} />
+          {query.trim() && !matches.length && <p className="muted">No requisitions match "{query.trim()}".</p>}
+          <div className="list">
+            {matches.map((r) => (
+              <button key={r.id} type="button" onClick={() => pick(r)}>
+                {r.positionTitle || '(no title)'} <span className="muted">{r.reqNumber}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      {picked && (
+        <p className="picked">
+          <strong>{picked.positionTitle || '(no title)'}</strong> <span className="muted">{picked.reqNumber}</span>{' '}
+          <button type="button" onClick={() => setPicked(null)}>Change</button>
+        </p>
+      )}
       {picked && (
         <>
           <label htmlFor="gb-round">Interview round</label>

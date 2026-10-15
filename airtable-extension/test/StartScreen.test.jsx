@@ -48,6 +48,26 @@ describe('StartScreen', () => {
     expect(screen.getByLabelText('Guide name').value).toBe('Custom');
   });
 
+  it('closes the match list once a requisition is picked and shows the choice', () => {
+    setup();
+    fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'manager'}});
+    fireEvent.click(screen.getByRole('button', {name: /^Store Manager R-2002$/}));
+    expect(screen.queryByRole('button', {name: /Senior Product Manager/})).toBeNull();
+    expect(screen.queryByLabelText('Find requisition')).toBeNull();
+    expect(screen.getByText('Store Manager')).toBeTruthy();
+    expect(screen.getByLabelText('Interview round')).toBeTruthy();
+  });
+
+  it('lets the CES change the picked requisition', () => {
+    setup();
+    fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'manager'}});
+    fireEvent.click(screen.getByRole('button', {name: /^Store Manager R-2002$/}));
+    fireEvent.click(screen.getByRole('button', {name: 'Change'}));
+    expect(screen.queryByLabelText('Interview round')).toBeNull();
+    expect(screen.getByLabelText('Find requisition').value).toBe('manager');
+    expect(screen.getByRole('button', {name: /Senior Product Manager/})).toBeTruthy();
+  });
+
   it('says so when no requisition matches', () => {
     setup();
     fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'zzz'}});
