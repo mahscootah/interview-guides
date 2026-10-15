@@ -56,3 +56,11 @@ Decision: proceed.
 | 8 | Blank Brand: "Columbia Sportswear (default)" | pass | |
 
 Changes requested during the run: return to the guide list after a successful Generate (aa6fc1a); fix split words in the question bank (4fbbd0d, 70595fe); move the question bank into an Airtable table (to do); put the date in generated file names (to do).
+
+Both "to do" items were done afterwards: the question bank moved to the Competencies and Interview Questions tables (ced8377) and file names carry the date and time (4ac27a6).
+
+### Released build, 2026-10-15 (Scott)
+
+Steps 1–3 re-run on the released extension (Develop off, page reloaded), reading the question bank from the Airtable tables: pass. The guide was created and generated, the page returned to the guide list with the green "Guide attached" notice, and the dated file opened in Word.
+
+Interview Guides → Requisition now has "Allow linking to multiple records" turned off (set by hand).
