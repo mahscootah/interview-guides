@@ -9,6 +9,13 @@ describe('question bank', () => {
     expect(LEADERSHIP).toEqual([...LEADERSHIP].sort());
   });
 
+  it('has no words split by stray spaces and no space before punctuation', () => {
+    const fragments = /\b(W hat|a ll|a nd|ch ange|chall enging|circ umstances|communi cating|cr itical|dea l|desc ribe|dra wing|exa mple|identi fied|mak ing|note ffective|outc ome|outco me|perform ance|pri orities|pro ject|requ ired|someth ing|Whatk ind)\b/;
+    const text = QBANK.flatMap((q) => [q.question, q.definition ?? '']);
+    expect(text.filter((s) => fragments.test(s))).toEqual([]);
+    expect(text.filter((s) => /\w [,.?;:]/.test(s))).toEqual([]);
+  });
+
   it('lists questions for a competency in bank order', () => {
     const qs = questionsFor('Accountability');
     expect(qs).toHaveLength(7);

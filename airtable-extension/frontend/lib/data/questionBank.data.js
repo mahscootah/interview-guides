@@ -52,7 +52,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Change Leadership",
     "definition": "Lead yourself, your peers, and your teams through change. Share information early and often.",
-    "question": "Give an example of a time you had to communicate change differently to different audiences. Why was this and what was the response? What is your strategy when communi cating updates to different groups?"
+    "question": "Give an example of a time you had to communicate change differently to different audiences. Why was this and what was the response? What is your strategy when communicating updates to different groups?"
   },
   {
     "group": "Leadership Capabilities",
@@ -76,7 +76,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Collaboration & Knowledge Sharing",
     "definition": "Seek and share knowledge for the benefit of all. Cultivate relationships and build new partnerships across regions, brands, and functions.",
-    "question": "Tell me about a time when you were working with someone and they did not understand what you were communicating. What did you do? What was the outco me?"
+    "question": "Tell me about a time when you were working with someone and they did not understand what you were communicating. What did you do? What was the outcome?"
   },
   {
     "group": "Leadership Capabilities",
@@ -202,7 +202,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Enterprise Mindset",
     "definition": "Advocate a shared vision and sense of purpose by thinking and working globally and cross functionally.",
-    "question": "Tell me about a recent business problem you solved. How did you use the organization’s structure (policies, systems, etc .) to solve the problem?"
+    "question": "Tell me about a recent business problem you solved. How did you use the organization’s structure (policies, systems, etc.) to solve the problem?"
   },
   {
     "group": "Leadership Capabilities",
@@ -364,7 +364,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Strategic Thinking",
     "definition": "Consider the whole picture and broadest possible view of issues and challenges to develop and implement long-term enterprise-wide solutions.",
-    "question": "Tell me about a time you were implementing a strategy and had to revise it or ch ange direction due to changes in the competitive landscape"
+    "question": "Tell me about a time you were implementing a strategy and had to revise it or change direction due to changes in the competitive landscape"
   },
   {
     "group": "Leadership Capabilities",
@@ -376,7 +376,7 @@ export const QBANK = [
     "group": "Leadership Capabilities",
     "competency": "Strategic Thinking",
     "definition": "Consider the whole picture and broadest possible view of issues and challenges to develop and implement long-term enterprise-wide solutions.",
-    "question": "Tell me about a time when you had to translate company strategies into specific actions . What did you do to keep them integrated and to make them understandable to others?"
+    "question": "Tell me about a time when you had to translate company strategies into specific actions. What did you do to keep them integrated and to make them understandable to others?"
   },
   {
     "group": "Leadership Capabilities",
@@ -472,13 +472,13 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Analytical Thinking",
     "definition": "Uses facts and available information to develop logical assumptions. Discriminates between important and unimportant details, recognizes inconsistencies between facts and/or data, and draws correct inferences from information.",
-    "question": "What is your process for dra wing inferences and/or conclusions from a large mass of data? Please provide a specific example. How did you assess the accuracy of your conclusions?"
+    "question": "What is your process for drawing inferences and/or conclusions from a large mass of data? Please provide a specific example. How did you assess the accuracy of your conclusions?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Analytical Thinking",
     "definition": "Uses facts and available information to develop logical assumptions. Discriminates between important and unimportant details, recognizes inconsistencies between facts and/or data, and draws correct inferences from information.",
-    "question": "How do you go about assuring that you've been realistic in your planning and projections? Give me an exa mple and the process you use"
+    "question": "How do you go about assuring that you've been realistic in your planning and projections? Give me an example and the process you use"
   },
   {
     "group": "Behavioral Skills",
@@ -513,37 +513,37 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
     "question": "Tell me about a time when you had a tight deadline – how did you balance completing the assignment with other work responsibilities, while also assuring the accuracy of the work?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
     "question": "To what degree does your current work require dealing with details which must be performed and/or documented? What impact does this process have on your effectiveness and time management?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
     "question": "Tell me about a time when something “fell through the cracks”. What were the circumstances? How did you handle it? What did you learn from it?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
-    "question": "Describe a cr itical task you do routinely. The last time you completed this, what steps did you take to ensure that the result was 100% accurate and what was the outcome?"
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
+    "question": "Describe a critical task you do routinely. The last time you completed this, what steps did you take to ensure that the result was 100% accurate and what was the outcome?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
     "question": "Describe a situation where you did not discover a problem until after distributing a product or work output. What was the impact and what did you learn from it?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Attention to Detail",
-    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems . Shows concerns for all aspects of the job, no matter how small.",
+    "definition": "Directs attention to the task at hand in order to avoid making mistakes. Prepares and carefully reviews figures, computations, reports, etc. to identify any errors or problems. Shows concerns for all aspects of the job, no matter how small.",
     "question": "Describe a situation where you discovered a mistake prior to distributing the work product. How did you discover the mistake and what action did you take? What did you learn?"
   },
   {
@@ -586,48 +586,48 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Balances Stakeholders",
     "definition": "Applies effective questioning and listening techniques to determine other parties’ positions. Settles differences without damaging relationships and is both direct and diplomatic. Quickly gains trust of others and ensures that agreed-upon alternatives have the support of all parties involved.",
-    "question": "Tell me about a time when you served as a mediator during a negotiation process. What were the circ umstances and what did you learn?"
+    "question": "Tell me about a time when you served as a mediator during a negotiation process. What were the circumstances and what did you learn?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Identify three of the most important things you do to maintain effective interpersonal relationships and why"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Describe some major steps you have taken to build rapport with your customers"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "How do you approach rebuilding a relationship that has deteriorated? Give an example and the outcome"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Tell me about a time when you built a strong relationship that stemmed from a difficult situation"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Describe a situation where you were unable to build a relationship with someone. What caused the strain and what did you do about it?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Tell me about a time when you made a special effort to treat another person in a way which showed your respect for the other’s feelings"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Building Strategic Relationships",
-    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals . Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
+    "definition": "Relates well to all kinds of people inside and outside of the organization; builds appropriate rapport, listens, and builds constructive and effective relationships to achieve goals. Uses diplomacy and tact, truly values people, and can diffuse high-tension situations comfortably.",
     "question": "Tell me about a time you changed your approach in a group situation (such as a meeting, presentation, or debate) based on the dynamics in the room"
   },
   {
@@ -676,7 +676,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Communication",
     "definition": "Consistently communicates with clarity and inclusion to optimize audience understanding. Communicates information in a clear, concise, and timely manner. Demonstrates effective speaking and presentation skills.",
-    "question": "Tell me about a time when you had to explain something you knew well to someone who communicates differently . What did you do?"
+    "question": "Tell me about a time when you had to explain something you knew well to someone who communicates differently. What did you do?"
   },
   {
     "group": "Behavioral Skills",
@@ -724,7 +724,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Conflict Resolution",
     "definition": "Reads situations quickly and deals with them effectively. Finds common ground and gets cooperation without disruption to workflows or interpersonal relationships.",
-    "question": "Describe the most recent work-related conflict you have encountered. What caused it, how did you handle it, and what was the outc ome?"
+    "question": "Describe the most recent work-related conflict you have encountered. What caused it, how did you handle it, and what was the outcome?"
   },
   {
     "group": "Behavioral Skills",
@@ -801,44 +801,44 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
     "question": "Describe your internal and/or external customers and your level of interaction"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
     "question": "What have you done to encourage others to maintain a significant focus on their customers? Give me some examples"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
     "question": "How do you obtain and keep up to date information about customers? How do you utilize this information to meet your customers’ needs?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
     "question": "Tell me about a time you created a new service, process, or product based on customer feedback"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
-    "question": "Tell me about a situation when you had to dea l with a difficult customer/client. What did you do? How effective was it?"
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
+    "question": "Tell me about a situation when you had to deal with a difficult customer/client. What did you do? How effective was it?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
     "question": "Tell me how you improve customer service (for yourself, your team). How do you recognize what improvements are needed? Give some examples"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Consumer Focus",
-    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identi fied problems until resolved.",
-    "question": "Tell me about a time when you were note ffective in meeting the customers needs. Why and what steps did you take to correct the situation?"
+    "definition": "Dedicated to meeting the expectations and requirements of internal and external customers. Establishes and maintains effective relationships with customers and gains their trust and respect. Proactively addresses customer needs and follows through on identified problems until resolved.",
+    "question": "Tell me about a time when you were not effective in meeting the customers needs. Why and what steps did you take to correct the situation?"
   },
   {
     "group": "Behavioral Skills",
@@ -850,7 +850,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Decision Making",
     "definition": "Makes the best decision based on a combination of analysis, knowledge, experience, and judgement in a timely manner. Applies both rational and creative processes to identify unknown root causes of problems. Calculates and evaluates the long-term consequences of a decision.",
-    "question": "Describe a team decision you recently contributed to. What was your contribution and how much did it influence the decision? W hat did the others contribute?"
+    "question": "Describe a team decision you recently contributed to. What was your contribution and how much did it influence the decision? What did the others contribute?"
   },
   {
     "group": "Behavioral Skills",
@@ -862,7 +862,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Decision Making",
     "definition": "Makes the best decision based on a combination of analysis, knowledge, experience, and judgement in a timely manner. Applies both rational and creative processes to identify unknown root causes of problems. Calculates and evaluates the long-term consequences of a decision.",
-    "question": "Many situations at work will require fast thinking and speed in making decisions. Give an example of a situation in which you were especially skillful in mak ing a decision quickly"
+    "question": "Many situations at work will require fast thinking and speed in making decisions. Give an example of a situation in which you were especially skillful in making a decision quickly"
   },
   {
     "group": "Behavioral Skills",
@@ -874,7 +874,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Decision Making",
     "definition": "Makes the best decision based on a combination of analysis, knowledge, experience, and judgement in a timely manner. Applies both rational and creative processes to identify unknown root causes of problems. Calculates and evaluates the long-term consequences of a decision.",
-    "question": "What prompts you to make a decision quickly as opposed to taking the time to mull over a ll the options before deciding?"
+    "question": "What prompts you to make a decision quickly as opposed to taking the time to mull over all the options before deciding?"
   },
   {
     "group": "Behavioral Skills",
@@ -940,7 +940,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Global Perspective",
     "definition": "Has an awareness and respect for global culture and social differences. Understands the business in context of the global marketplace and unique needs in different geographical locations.",
-    "question": "Describe a time you had to do someth ing different, unusual, or out of the ordinary for an international customer or partner"
+    "question": "Describe a time you had to do something different, unusual, or out of the ordinary for an international customer or partner"
   },
   {
     "group": "Behavioral Skills",
@@ -969,43 +969,43 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Gaining other's acceptance of our ideas can be difficult. Tell me about a time you had a problem getting team members to accept your idea. What approach did you use? What happened?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Describe a situation in which you were able to successfully convince a senior leader to see things in a different way"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Provide an example of how you have been effective in challenging or influencing the outcome in a key business decision"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Describe a time you had to consider another person's feelings without backing down on your own view"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Describe a situation in which you were able to influence the actions of others in a positive direction"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Tell me about a time you checked on the status of an important project/task and discovered it was being done incorrectly. What did you do?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Influencing",
-    "definition": "Expresses own ideas and persuades others . Mobilizes people to take action and achieves effective compromise.",
+    "definition": "Expresses own ideas and persuades others. Mobilizes people to take action and achieves effective compromise.",
     "question": "Describe a negotiation you recently took part in. What was your contribution? How effective was it? How would you describe your style of negotiation?"
   },
   {
@@ -1048,7 +1048,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Information Monitoring",
     "definition": "Able to understand what information is needed and how that information can evolve over time. Able to stay current with relevant information.",
-    "question": "Tell me about a time the feedback you gathered on a project or process was particularly useful in the outcome of that pro ject"
+    "question": "Tell me about a time the feedback you gathered on a project or process was particularly useful in the outcome of that project"
   },
   {
     "group": "Behavioral Skills",
@@ -1072,7 +1072,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Initiative",
     "definition": "Is self-starting and seizes opportunities when they arise. Takes action beyond what is required, completes assignments independently without constant supervision, and contributes to others’ initiatives without being asked.",
-    "question": "What changes have you attempted to implement in your work environment? Were you successful, a nd why or why not?"
+    "question": "What changes have you attempted to implement in your work environment? Were you successful, and why or why not?"
   },
   {
     "group": "Behavioral Skills",
@@ -1179,85 +1179,85 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "In advising others about project planning, what points do you emphasize and why?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "Name a project that you have had to plan recently. What aspects went well? What could you have done better?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "Give an example of when you faced a problem that impacted your project timeline. How did you handle it? What was the outcome?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
-    "question": "Tell me about a time you were faced with conflicting pri orities. In scheduling your time, how did you determine what was the top priority?"
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
+    "question": "Tell me about a time you were faced with conflicting priorities. In scheduling your time, how did you determine what was the top priority?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "Give me an example of a project you managed where setting milestones and measuring progress was critical; how did you go about this?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "For a recent project, describe for me the contingency plan you developed. How did you develop it and did you have to put it into effect? If so, why?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Plans & Aligns",
-    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks . Measures performance against goals and evaluates results.",
+    "definition": "Accurately scopes the length and difficulty of tasks and projects. Sets objectives and goals and integrates planning with the work of other teams. Anticipates and adjusts for roadblocks. Measures performance against goals and evaluates results.",
     "question": "What procedure have you used to keep track of items that need your attention? Tell me about a time you used that procedure"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "Tell me about a time you had a problem getting people to accept your ideas in a meeting. What approach did you use? What happened?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "Sometimes when meeting with an important internal/external customer, we don't agree with everything discussed. Tell me about a meeting you led where this happened to you. What did you do?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "Describe the most intimidating audience you have ever faced when making a presentation. How did you handle them? What was the result?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "Tell me about a time when you had to present technical information to a non-technical group. How did you prepare and communicate the information and what was the outcome?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "We've all been in meetings in which no one would volunteer to talk or take action. Tell me about a time this happened in a meeting you were leading. What did you do?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "In presenting to upper management or outside groups, what do you do differently than with an internal group? Give an example"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Presentation Skills & Leading Meetings",
-    "definition": "Presents in a clear, succinct, and organized manner . Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
+    "definition": "Presents in a clear, succinct, and organized manner. Is effective in a variety of presentation settings including formal and informal. Commands attention and manages group process during the presentation.",
     "question": "Have you given any classroom or workshop training? Tell me about a specific course or workshop you conducted"
   },
   {
@@ -1288,7 +1288,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Problem Solving",
     "definition": "Asks good questions and probes all sources for answers. Sees underlying or hidden patterns. Uses rigorous logic and methods to analyze and understand why problems occur and generates and implements solutions.",
-    "question": "Describe a difficult work-related problem that requ ired you to come up with a creative solution. Tell me about the steps or actions you took and why?"
+    "question": "Describe a difficult work-related problem that required you to come up with a creative solution. Tell me about the steps or actions you took and why?"
   },
   {
     "group": "Behavioral Skills",
@@ -1305,73 +1305,73 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "How do you measure quality for a project?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "What are some of the productivity measurements you use to keep the project on time and within budget?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "What types of measurements do you build into project processes that keeps you informed of the project progress?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "What steps do you take to identify the modifications needed in various processes/technologies to improve timeliness and quality?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "What do you believe contributes the most to process improvement and why?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
-    "question": "Whatk ind of maintenance activities are necessary to keep processes functioning well over time?"
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "question": "What kind of maintenance activities are necessary to keep processes functioning well over time?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Process Oriented",
-    "definition": "Good at figuring out the process necessary to get things done . Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
+    "definition": "Good at figuring out the process necessary to get things done. Knows how to organize people and activities and understands how to separate and combine tasks into an efficient workflow. Sees opportunities for synergy and simplifies complex processes.",
     "question": "How do you go about identifying the major processes of your work?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Professionalism",
-    "definition": "Obtains high perform ance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
+    "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
     "question": "Tell me about a situation in which someone asked for your help and you had to decline due to other commitments. How did you go about doing so?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Professionalism",
-    "definition": "Obtains high perform ance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
+    "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
     "question": "Tell me about a demanding situation in which you managed to remain calm and composed under pressure. What was the outcome?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Professionalism",
-    "definition": "Obtains high perform ance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
+    "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
     "question": "Tell me about a time in which you had to be the face of your team/company. Ho w did you ensure you were prepared and representing the team/company well?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Professionalism",
-    "definition": "Obtains high perform ance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
+    "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
     "question": "Tell me about a time when you felt you did not make a good impression in a work-related situation. What were the circumstances and what benefits did you gain from this experience?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Professionalism",
-    "definition": "Obtains high perform ance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
+    "definition": "Obtains high performance by developing a strong sense of professionalism, accountability, and pride with internal and external parties.",
     "question": "What is the most useful criticism you have ever received? Give an example of how you made improvements afterward receiving this feedback"
   },
   {
@@ -1485,37 +1485,37 @@ export const QBANK = [
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
     "question": "How do you set long-term goals for your team? How often do you check and review these goals?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
     "question": "What strategies have you used to communicate a major new directive of senior management to employees? Which strategies have worked and which ones have not? Give a specific example"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
-    "question": "Gaining commitment to a new vision can be very chall enging. Tell me about a time you were unsuccessful in gaining the commitment of others in your organization to a new vision. Why was it unsuccessful and how did you handle it?"
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "question": "Gaining commitment to a new vision can be very challenging. Tell me about a time you were unsuccessful in gaining the commitment of others in your organization to a new vision. Why was it unsuccessful and how did you handle it?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
     "question": "Tell me about the most significant change you have brought in an organization"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
     "question": "What changes have occurred in your field that will have an impact on your organization? How have you responded to one of those changes?"
   },
   {
     "group": "Behavioral Skills",
     "competency": "Strategic Leadership",
-    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration . Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
+    "definition": "Uses problem-solving skills to help team members and organization achieve long-term goals. Embodies strong communication, innovation, and collaboration. Analyzes short and long - term risks of solutions, measures success of implementation, and evaluates outcome for future planning.",
     "question": "Describe a situation in which you had to translate a broad or general directive of senior management into specific goals. Explain how you did this and the goals you established"
   },
   {
@@ -1534,7 +1534,7 @@ export const QBANK = [
     "group": "Behavioral Skills",
     "competency": "Teamwork",
     "definition": "Works effectively with team to accomplish goals. Takes actions that respect the needs and contributions of others. Helps create and maintain strong morale and shares expertise and successes with others.",
-    "question": "In a team or group environment setting, desc ribe actions you have taken to encourage others to feel comfortable sharing their opinions, even if they differ from your own"
+    "question": "In a team or group environment setting, describe actions you have taken to encourage others to feel comfortable sharing their opinions, even if they differ from your own"
   },
   {
     "group": "Behavioral Skills",
