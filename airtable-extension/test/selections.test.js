@@ -3,32 +3,32 @@ import {
   emptySelections, serializeSelections, parseSelections, toggleCompetency, toggleQuestion,
   setPanelist, addCustomQuestion, removeCustomQuestion, setBrandOverride,
 } from '../frontend/lib/selections.js';
-import {questionsFor} from '../frontend/lib/questionBank.js';
+import {bank} from './fixtures/bank.js';
 
-const Q0 = questionsFor('Accountability')[0];
+const Q0 = bank.questionsFor('Accountability')[0];
 
 describe('selections codec', () => {
   it('round-trips through serialize/parse', () => {
     const sel = toggleQuestion(toggleCompetency(emptySelections(), 'Accountability'), 'Accountability', Q0);
-    const {selections, warning} = parseSelections(serializeSelections(sel));
+    const {selections, warning} = parseSelections(serializeSelections(sel), bank);
     expect(warning).toBeNull();
     expect(selections).toEqual(sel);
   });
 
   it('treats blank text as empty picks with no warning', () => {
-    expect(parseSelections('')).toEqual({selections: emptySelections(), warning: null});
-    expect(parseSelections(null)).toEqual({selections: emptySelections(), warning: null});
+    expect(parseSelections('', bank)).toEqual({selections: emptySelections(), warning: null});
+    expect(parseSelections(null, bank)).toEqual({selections: emptySelections(), warning: null});
   });
 
   it('resets with a warning on corrupt or truncated JSON', () => {
-    const {selections, warning} = parseSelections('{"v":1,"competencies":[{"na');
+    const {selections, warning} = parseSelections('{"v":1,"competencies":[{"na', bank);
     expect(selections).toEqual(emptySelections());
     expect(warning).toMatch(/could not be read/);
   });
 
   it('resets with a warning on an unknown version or shape', () => {
-    expect(parseSelections('{"v":2,"competencies":[]}').warning).toMatch(/unsupported/);
-    expect(parseSelections('[]').warning).toMatch(/unsupported/);
+    expect(parseSelections('{"v":2,"competencies":[]}', bank).warning).toMatch(/unsupported/);
+    expect(parseSelections('[]', bank).warning).toMatch(/unsupported/);
   });
 
   it('turns questions no longer in the bank into custom questions and drops junk', () => {
@@ -39,7 +39,7 @@ describe('selections codec', () => {
         {nope: true},
       ],
     });
-    const {selections} = parseSelections(text);
+    const {selections} = parseSelections(text, bank);
     expect(selections.brandOverride).toBeNull();
     expect(selections.competencies).toEqual([
       {name: 'Accountability', panelist: 'A', questions: [Q0], customQuestions: ['HM q', 'Old question']},

@@ -1,23 +1,31 @@
-import {QBANK} from './data/questionBank.data.js';
-
-export {QBANK};
 export const LEADERSHIP_GROUP = 'Leadership Capabilities';
 export const BEHAVIORAL_GROUP = 'Behavioral Skills';
 
-const namesIn = (group) =>
-  [...new Set(QBANK.filter((q) => q.group === group).map((q) => q.competency))].sort();
+const byOrder = (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity);
 
-export const LEADERSHIP = namesIn(LEADERSHIP_GROUP);
-export const BEHAVIORAL = namesIn(BEHAVIORAL_GROUP);
+/**
+ * Builds the question bank from the Competencies and Interview Questions table rows.
+ * Inactive competencies and questions are left out; a question whose competency is
+ * inactive or missing is left out too.
+ */
+export function createQuestionBank(competencies, questions) {
+  const active = competencies.filter((c) => c.active && c.name.trim());
+  const nameById = new Map(active.map((c) => [c.id, c.name.trim()]));
+  const groupByName = new Map(active.map((c) => [c.name.trim(), c.group]));
+  const textsByName = new Map();
+  for (const q of [...questions].filter((q) => q.active && q.text.trim()).sort(byOrder)) {
+    const name = nameById.get(q.competencyId);
+    if (name) textsByName.set(name, [...(textsByName.get(name) ?? []), q.text.trim()]);
+  }
+  const namesIn = (group) => [...groupByName].filter(([, g]) => g === group).map(([n]) => n).sort();
+  const questionsFor = (name) => textsByName.get(name) ?? [];
 
-export function questionsFor(competency) {
-  return QBANK.filter((q) => q.competency === competency).map((q) => q.question);
-}
-
-export function groupOf(competency) {
-  return QBANK.find((q) => q.competency === competency)?.group ?? '';
-}
-
-export function isKnownQuestion(competency, text) {
-  return questionsFor(competency).includes(text);
+  return {
+    LEADERSHIP: namesIn(LEADERSHIP_GROUP),
+    BEHAVIORAL: namesIn(BEHAVIORAL_GROUP),
+    questionCount: [...textsByName.values()].reduce((n, list) => n + list.length, 0),
+    questionsFor,
+    groupOf: (name) => groupByName.get(name) ?? '',
+    isKnownQuestion: (name, text) => questionsFor(name).includes(text),
+  };
 }

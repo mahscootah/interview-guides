@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest';
 import JSZip from 'jszip';
 import {JSDOM} from 'jsdom';
 import {buildGuideDocx} from '../frontend/lib/docBuilder.js';
+import {bank} from './fixtures/bank.js';
 
 const header = {
   positionTitle: 'Sr Product Manager', reqNumber: 'R-1001', hiringManager: 'Jamie Lee',
@@ -24,8 +25,15 @@ const textOf = (xml) => [...xml.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g)].map
 const decode = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
 
 describe('buildGuideDocx', () => {
+  it('labels each competency Leadership or Behavioral using the bank group', async () => {
+    const groupOf = (name) => (name === 'Teamwork' ? 'Leadership Capabilities' : '');
+    const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf}))).xml));
+    expect(text).toMatch(/AccountabilityBehavioral/);
+    expect(text).toMatch(/TeamworkLeadership/);
+  });
+
   it('produces a valid docx zip with the brand logo', async () => {
-    const bytes = await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections});
+    const bytes = await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf});
     expect(bytes).toBeInstanceOf(Uint8Array);
     expect([...bytes.slice(0, 4)]).toEqual([0x50, 0x4b, 0x03, 0x04]);
     const {zip} = await documentXml(bytes);
@@ -33,7 +41,7 @@ describe('buildGuideDocx', () => {
   });
 
   it('includes title, meta line, facilitator, panelists and blank candidate line', async () => {
-    const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections}))).xml));
+    const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf}))).xml));
     expect(text).toContain('INTERVIEW GUIDE – SR PRODUCT MANAGER');
     expect(text).toContain('Req # R-1001 · Panel · Virtual (Microsoft Teams)');
     expect(text).toContain('Candidate: ____________________');
@@ -42,7 +50,7 @@ describe('buildGuideDocx', () => {
   });
 
   it('lists questions in selection order with their panelist, escaping special characters', async () => {
-    const {xml} = await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections}));
+    const {xml} = await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf}));
     const text = decode(textOf(xml));
     const order = ['Accountability', 'First bank question', 'Teamwork', 'Second bank question', 'R&D <lead> “quoted” question'];
     const positions = order.map((s) => text.indexOf(s));
@@ -52,19 +60,19 @@ describe('buildGuideDocx', () => {
   });
 
   it('falls back to the hiring manager as facilitator when no panelists are named', async () => {
-    const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: [], selections}))).xml));
+    const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: [], selections, groupOf: bank.groupOf}))).xml));
     expect(text).toContain('Jamie Lee — you have been selected as a facilitator.');
   });
 
   it('omits the logo for an unknown brand key', async () => {
-    const bytes = await buildGuideDocx({header: {...header, brandKey: 'nope'}, panelists: ['Ana'], selections});
+    const bytes = await buildGuideDocx({header: {...header, brandKey: 'nope'}, panelists: ['Ana'], selections, groupOf: bank.groupOf});
     const {zip} = await documentXml(bytes);
     expect(Object.keys(zip.files).some((f) => f.startsWith('word/media/'))).toBe(false);
   });
 
   it('replaces control characters (e.g. pasted Word soft breaks) so the XML stays valid', async () => {
     const dirty = {...selections, competencies: [{...selections.competencies[1], customQuestions: ['Line one\u000Bline two\u0001']}]};
-    const {xml} = await documentXml(await buildGuideDocx({header: {...header, hiringManager: 'Jamie\u000CLee'}, panelists: ['A\u000Bna'], selections: dirty}));
+    const {xml} = await documentXml(await buildGuideDocx({header: {...header, hiringManager: 'Jamie\u000CLee'}, panelists: ['A\u000Bna'], selections: dirty, groupOf: bank.groupOf}));
     const parsed = new new JSDOM('').window.DOMParser().parseFromString(xml, 'application/xml');
     expect(parsed.getElementsByTagName('parsererror')).toHaveLength(0);
     expect(decode(textOf(xml))).toContain('Line one line two');

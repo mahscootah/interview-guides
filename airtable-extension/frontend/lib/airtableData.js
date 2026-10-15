@@ -1,4 +1,12 @@
-export const TABLES = {requisitions: 'Master Tracker - All TA', guides: 'Interview Guides'};
+export const TABLES = {
+  requisitions: 'Master Tracker - All TA',
+  guides: 'Interview Guides',
+  competencies: 'Competencies',
+  questions: 'Interview Questions',
+};
+
+export const COMPETENCY_FIELDS = {name: 'Name', group: 'Group', active: 'Active'};
+export const QUESTION_FIELDS = {text: 'Question', competency: 'Competency', order: 'Order', active: 'Active'};
 
 export const REQ_FIELDS = {
   positionTitle: 'Position Title',
@@ -32,6 +40,26 @@ export function readRequisition(record) {
     hiringManager: text(REQ_FIELDS.hiringManager),
     format: text(REQ_FIELDS.format),
     panelistCount: Number(record.getCellValue(REQ_FIELDS.panelistCount)) || 0,
+  };
+}
+
+export function readCompetency(record) {
+  return {
+    id: record.id,
+    name: record.getCellValueAsString(COMPETENCY_FIELDS.name).trim(),
+    group: record.getCellValue(COMPETENCY_FIELDS.group)?.name ?? '',
+    active: Boolean(record.getCellValue(COMPETENCY_FIELDS.active)),
+  };
+}
+
+export function readQuestion(record) {
+  const order = record.getCellValue(QUESTION_FIELDS.order);
+  return {
+    id: record.id,
+    text: record.getCellValueAsString(QUESTION_FIELDS.text),
+    competencyId: (record.getCellValue(QUESTION_FIELDS.competency) ?? [])[0]?.id ?? null,
+    order: typeof order === 'number' ? order : null,
+    active: Boolean(record.getCellValue(QUESTION_FIELDS.active)),
   };
 }
 

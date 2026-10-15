@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {
   readRequisition, readGuide, newGuideFields, savePicksFields, generatedFields, ROUNDS,
+  readCompetency, readQuestion,
 } from '../frontend/lib/airtableData.js';
 
 function fakeRecord(id, values, createdTime = new Date('2026-10-01T00:00:00Z')) {
@@ -18,6 +19,18 @@ function fakeRecord(id, values, createdTime = new Date('2026-10-01T00:00:00Z')) 
 }
 
 describe('airtableData', () => {
+  it('reads a competency row', () => {
+    const rec = fakeRecord('recC', {Name: ' Teamwork ', Group: {name: 'Behavioral Skills'}, Active: true});
+    expect(readCompetency(rec)).toEqual({id: 'recC', name: 'Teamwork', group: 'Behavioral Skills', active: true});
+    expect(readCompetency(fakeRecord('recD', {Name: 'X'}))).toEqual({id: 'recD', name: 'X', group: '', active: false});
+  });
+
+  it('reads a question row', () => {
+    const rec = fakeRecord('recQ', {Question: 'Tell me…', Competency: [{id: 'recC', name: 'Teamwork'}], Order: 2, Active: true});
+    expect(readQuestion(rec)).toEqual({id: 'recQ', text: 'Tell me…', competencyId: 'recC', order: 2, active: true});
+    expect(readQuestion(fakeRecord('recR', {Question: 'Q'}))).toEqual({id: 'recR', text: 'Q', competencyId: null, order: null, active: false});
+  });
+
   it('reads a requisition', () => {
     const rec = fakeRecord('rec1', {
       'Position Title': 'Sr PM', 'Req #': 'R-100', Brand: {name: 'SOREL'},

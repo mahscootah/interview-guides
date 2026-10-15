@@ -27,7 +27,7 @@ function BrandLine({requisition, selections, onOverride}) {
   );
 }
 
-export function BuilderScreen({requisition, guide, initialPanelists, initialSelections, warning, onBack, onSave, onGenerate, onAttached}) {
+export function BuilderScreen({requisition, guide, initialPanelists, initialSelections, warning, bank, onBack, onSave, onGenerate, onAttached}) {
   const [panelists, setPanelists] = useState(initialPanelists);
   const [selections, setSelections] = useState(initialSelections);
   const [busy, setBusy] = useState(false);
@@ -81,8 +81,8 @@ export function BuilderScreen({requisition, guide, initialPanelists, initialSele
         <div>Brand: <BrandLine requisition={requisition} selections={selections} onOverride={edit(setBrandOverride)} /></div>
       </section>
       <PanelistsEditor panelists={panelists} onChange={(next) => { setResult(null); setChanged(true); setPanelists(next); }} />
-      <CompetencyPicker selections={selections} onToggle={edit(toggleCompetency)} />
-      <QuestionPicker selections={selections} panelists={panelists}
+      <CompetencyPicker bank={bank} selections={selections} onToggle={edit(toggleCompetency)} />
+      <QuestionPicker bank={bank} selections={selections} panelists={panelists}
         onToggleQuestion={edit(toggleQuestion)} onSetPanelist={edit(setPanelist)}
         onAddCustom={edit(addCustomQuestion)} onRemoveCustom={edit(removeCustomQuestion)} />
       <GenerateBar problems={problems} busy={busy} result={result} onGenerate={generate}

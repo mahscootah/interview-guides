@@ -4,7 +4,7 @@ import {describe, it, expect, vi, afterEach} from 'vitest';
 import {render, screen, fireEvent, cleanup, waitFor} from '@testing-library/react';
 import {BuilderScreen} from '../frontend/ui/BuilderScreen.jsx';
 import {emptySelections} from '../frontend/lib/selections.js';
-import {questionsFor} from '../frontend/lib/questionBank.js';
+import {bank} from './fixtures/bank.js';
 
 afterEach(cleanup);
 
@@ -18,14 +18,14 @@ function setup(props = {}) {
   const onAttached = vi.fn();
   render(<BuilderScreen requisition={requisition} guide={guide} initialPanelists={['', '']}
     initialSelections={emptySelections()} warning={null} onBack={onBack} onSave={onSave} onGenerate={onGenerate}
-    onAttached={onAttached} {...props} />);
+    onAttached={onAttached} bank={bank} {...props} />);
   return {onGenerate, onBack, onSave, onAttached};
 }
 
 function fillMinimalGuide() {
   fireEvent.change(screen.getByLabelText('Panelist 1'), {target: {value: 'Ana'}});
   fireEvent.click(screen.getByLabelText('Accountability'));
-  fireEvent.click(screen.getByLabelText(questionsFor('Accountability')[0]));
+  fireEvent.click(screen.getByLabelText(bank.questionsFor('Accountability')[0]));
   fireEvent.change(screen.getByLabelText('Panelist for Accountability'), {target: {value: 'Ana'}});
 }
 
@@ -40,6 +40,17 @@ describe('BuilderScreen', () => {
   it('asks for a template when the Brand is unrecognized', () => {
     setup({requisition: {...requisition, brand: 'Acme'}});
     expect(screen.getByLabelText('Brand template')).toBeTruthy();
+  });
+
+  it('lets the CES remove a competency that is no longer offered', () => {
+    const initialSelections = {...emptySelections(), competencies: [{name: 'Retired Skill', panelist: '', questions: [], customQuestions: ['Old Q']}]};
+    setup({initialSelections});
+    expect(screen.getByText('No longer offered')).toBeTruthy();
+    const box = screen.getByLabelText('Retired Skill');
+    expect(box.checked).toBe(true);
+    fireEvent.click(box);
+    expect(screen.queryByLabelText('Retired Skill')).toBeNull();
+    expect(screen.queryByText('No longer offered')).toBeNull();
   });
 
   it('disables Generate and lists problems until the guide is complete', async () => {

@@ -3,7 +3,7 @@ import {
   BorderStyle, WidthType, TabStopType, TabStopPosition,
 } from 'docx';
 import {LOGOS} from './data/logos.data.js';
-import {groupOf, LEADERSHIP_GROUP} from './questionBank.js';
+import {LEADERSHIP_GROUP} from './questionBank.js';
 import {
   para, emptyPara, headerPara, bullet, cell, noBorder, cellBorder, NAVY, ORANGE, GREY_TEXT,
 } from './docParts.js';
@@ -74,7 +74,7 @@ function scoreTable() {
   });
 }
 
-function questionRows(competency, question, shade) {
+function questionRows(competency, question, shade, groupOf) {
   const isLeadership = groupOf(competency.name) === LEADERSHIP_GROUP;
   const compCell = cell([
     para(competency.name, {bold: true, after: 60}),
@@ -93,12 +93,12 @@ function questionRows(competency, question, shade) {
   return [row, score];
 }
 
-function questionsTable(selections) {
+function questionsTable(selections, groupOf) {
   const headRow = new TableRow({children: ['Competency', 'Panelist', 'Question', 'Notes'].map((label, i) =>
     cell([para(label, {bold: true, color: 'FFFFFF', size: 18})], {shade: NAVY, width: COLS[i]}))});
   const pairs = selections.competencies.flatMap((c) =>
     [...c.questions, ...c.customQuestions].map((q) => [c, q]));
-  const body = pairs.flatMap(([c, q], i) => questionRows(c, q, i % 2 === 0 ? 'F9FAFB' : 'FFFFFF'));
+  const body = pairs.flatMap(([c, q], i) => questionRows(c, q, i % 2 === 0 ? 'F9FAFB' : 'FFFFFF', groupOf));
   return new Table({width: {size: 9360, type: WidthType.DXA}, columnWidths: COLS, rows: [headRow, ...body]});
 }
 
@@ -114,7 +114,7 @@ function notesTable() {
   });
 }
 
-function bodyChildren({header, panelists, selections}) {
+function bodyChildren({header, panelists, selections, groupOf}) {
   const named = panelists.map((p) => p.trim()).filter(Boolean);
   const facilitator = named[0] || header.hiringManager;
   const meta = [header.reqNumber && `Req # ${header.reqNumber}`, header.round, header.format].filter(Boolean).join(' · ');
@@ -142,7 +142,7 @@ function bodyChildren({header, panelists, selections}) {
     emptyPara(),
     headerPara('Interview Questions'),
     para(`Interviewers: ${named.join(', ') || header.hiringManager}`, {bold: true, after: 120}),
-    questionsTable(selections),
+    questionsTable(selections, groupOf),
     emptyPara(),
     headerPara('Additional Notes'),
     notesTable(),
@@ -171,16 +171,17 @@ function pageFooter() {
   })]});
 }
 
-/** Builds the panel interview guide. Returns the .docx bytes. */
+/** Builds the panel interview guide. `groupOf` maps a competency name to its group. Returns the .docx bytes. */
 export async function buildGuideDocx(input) {
   const {header, panelists, selections} = cleanInput(input);
+  const {groupOf} = input;
   const doc = new Document({
     styles: {default: {document: {run: {font: 'Arial', size: 20}}}},
     sections: [{
       properties: {page: {size: {width: 12240, height: 15840}, margin: {top: 1080, right: 1080, bottom: 1080, left: 1080}}},
       headers: {default: pageHeader(header)},
       footers: {default: pageFooter()},
-      children: bodyChildren({header, panelists, selections}),
+      children: bodyChildren({header, panelists, selections, groupOf}),
     }],
   });
   return new Uint8Array(await Packer.toArrayBuffer(doc));

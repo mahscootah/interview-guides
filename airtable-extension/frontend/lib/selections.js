@@ -1,5 +1,3 @@
-import {isKnownQuestion} from './questionBank.js';
-
 export const SELECTIONS_VERSION = 1;
 const UNREADABLE = 'Saved picks could not be read and were reset.';
 const UNSUPPORTED = 'Saved picks are in an unsupported format and were reset.';
@@ -14,17 +12,18 @@ export function serializeSelections(selections) {
 
 const strings = (value) => (Array.isArray(value) ? value.filter((s) => typeof s === 'string') : []);
 
-function normalizeCompetency(raw) {
+function normalizeCompetency(raw, bank) {
   const questions = strings(raw.questions);
   return {
     name: raw.name,
     panelist: typeof raw.panelist === 'string' ? raw.panelist : '',
-    questions: questions.filter((q) => isKnownQuestion(raw.name, q)),
-    customQuestions: [...strings(raw.customQuestions), ...questions.filter((q) => !isKnownQuestion(raw.name, q))],
+    questions: questions.filter((q) => bank.isKnownQuestion(raw.name, q)),
+    customQuestions: [...strings(raw.customQuestions), ...questions.filter((q) => !bank.isKnownQuestion(raw.name, q))],
   };
 }
 
-export function parseSelections(text) {
+/** Questions no longer in `bank` are kept as custom questions so nothing saved is lost. */
+export function parseSelections(text, bank) {
   if (!text || !text.trim()) return {selections: emptySelections(), warning: null};
   let raw;
   try {
@@ -37,7 +36,7 @@ export function parseSelections(text) {
   }
   const competencies = raw.competencies
     .filter((c) => c && typeof c.name === 'string')
-    .map(normalizeCompetency);
+    .map((c) => normalizeCompetency(c, bank));
   const brandOverride = typeof raw.brandOverride === 'string' ? raw.brandOverride : null;
   return {selections: {v: SELECTIONS_VERSION, brandOverride, competencies}, warning: null};
 }

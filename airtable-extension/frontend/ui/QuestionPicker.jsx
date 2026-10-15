@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import {questionsFor} from '../lib/questionBank.js';
 
-function CompetencyQuestions({competency, panelists, onToggleQuestion, onSetPanelist, onAddCustom, onRemoveCustom}) {
+function CompetencyQuestions({bank, competency, panelists, onToggleQuestion, onSetPanelist, onAddCustom, onRemoveCustom}) {
   const [draft, setDraft] = useState('');
   const named = panelists.map((p) => p.trim()).filter(Boolean);
   const add = () => { onAddCustom(competency.name, draft); setDraft(''); };
@@ -14,7 +13,7 @@ function CompetencyQuestions({competency, panelists, onToggleQuestion, onSetPane
         <option value="">Choose…</option>
         {named.map((p) => <option key={p} value={p}>{p}</option>)}
       </select>
-      {questionsFor(competency.name).map((q) => (
+      {bank.questionsFor(competency.name).map((q) => (
         <label key={q} style={{fontWeight: 400}}>
           <input type="checkbox" aria-label={q} checked={competency.questions.includes(q)}
             onChange={() => onToggleQuestion(competency.name, q)} /> {q}
@@ -35,13 +34,13 @@ function CompetencyQuestions({competency, panelists, onToggleQuestion, onSetPane
   );
 }
 
-export function QuestionPicker({selections, panelists, ...handlers}) {
+export function QuestionPicker({bank, selections, panelists, ...handlers}) {
   if (!selections.competencies.length) return null;
   return (
     <section>
       <h3>Questions and panelists</h3>
       {selections.competencies.map((c) => (
-        <CompetencyQuestions key={c.name} competency={c} panelists={panelists} {...handlers} />
+        <CompetencyQuestions key={c.name} bank={bank} competency={c} panelists={panelists} {...handlers} />
       ))}
     </section>
   );
