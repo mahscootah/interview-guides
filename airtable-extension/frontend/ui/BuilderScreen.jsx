@@ -60,7 +60,7 @@ export function BuilderScreen({requisition, guide, initialPanelists, initialSele
       setResult(outcome);
       if (outcome.status === 'attached') {
         setChanged(false);
-        onAttached?.({filename: outcome.filename, bytes: outcome.bytes});
+        onAttached?.({filename: outcome.filename, bytes: outcome.bytes, warning: outcome.warning});
       }
     } catch (err) {
       setResult({status: 'download', filename: '', bytes: null, error: err.message});

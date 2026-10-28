@@ -14,9 +14,14 @@ function stamp(at) {
   return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())} ${hour}.${pad(at.getMinutes())} ${ampm}`;
 }
 
-export function guideFileName(positionTitle, round, at) {
+// The file name without its time stamp or extension, e.g. "Sr PM - Panel Interview Guide".
+export function guideFileBase(positionTitle, round) {
   const parts = [clean(positionTitle), clean(round)].filter(Boolean);
-  const base = parts.length ? `${parts.join(' - ')} Interview Guide` : 'Interview Guide';
+  return parts.length ? `${parts.join(' - ')} Interview Guide` : 'Interview Guide';
+}
+
+export function guideFileName(positionTitle, round, at) {
+  const base = guideFileBase(positionTitle, round);
   return at ? `${base} ${stamp(at)}.docx` : `${base}.docx`;
 }
 

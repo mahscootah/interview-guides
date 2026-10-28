@@ -94,6 +94,14 @@ describe('BuilderScreen', () => {
     await waitFor(() => expect(onAttached).toHaveBeenCalledWith({filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([7])}));
   });
 
+  it('passes a requisition warning along with the attached file', async () => {
+    const onGenerate = vi.fn(async () => ({status: 'attached', filename: 'f.docx', bytes: new Uint8Array([7]), warning: 'Not on the requisition.'}));
+    const {onAttached} = setup({onGenerate});
+    fillMinimalGuide();
+    fireEvent.click(screen.getByRole('button', {name: 'Generate guide'}));
+    await waitFor(() => expect(onAttached).toHaveBeenCalledWith({filename: 'f.docx', bytes: new Uint8Array([7]), warning: 'Not on the requisition.'}));
+  });
+
   it('lists the attached guide files newest first, each opening in a new tab', () => {
     const files = [
       {id: 'att1', url: 'https://files/one', filename: 'Sr PM - Panel Interview Guide 2026-10-15 9.41 AM.docx'},

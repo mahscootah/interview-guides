@@ -116,9 +116,16 @@ secrets are supported, plus a shared TA service-account token.
 
 ### 3.2 Master Tracker changes
 
-Only one: Airtable automatically adds an **Interview Guides** link field listing the linked
-guides. **Panel Interview Guide**, **Panel Interview Guide Questions** and every other
-existing field stay untouched.
+Schema: only one change. Airtable automatically adds an **Interview Guides** link field
+listing the linked guides. No existing field's definition changes.
+
+Data (changed 2026-10-28 at Scott's request): after a guide is attached, the extension also
+adds the file to the requisition's **Panel Interview Guide** attachment field, so it is where
+CES and recruiters already look. It keeps one builder file per round there: a new file
+replaces the builder's older file for the same title and round, matched by the exact name
+pattern the builder uses. Hand-uploaded files are never removed. If this write fails, the
+guide stays attached to its Interview Guides record and the CES sees a warning.
+**Panel Interview Guide Questions** and every other field stay untouched.
 
 ### 3.3 Fields read from Master Tracker (read-only)
 
@@ -297,7 +304,8 @@ added to TA Airtable - Live only after that, with Scott's sign-off.
 - One guide per candidate
 - Sending guides to panelists automatically
 - Editing the question bank inside Airtable
-- Writing to **Panel Interview Guide** or **Panel Interview Guide Questions**
+- Writing to **Panel Interview Guide Questions**, or removing hand-uploaded files from
+  **Panel Interview Guide**
 - Changes to the existing web app
 
 ## 9. Open items

@@ -15,6 +15,7 @@ function deps(over = {}) {
       buildDocx: track('buildDocx', new Uint8Array([9])),
       upload: track('upload', 'https://d/files/new'),
       saveGenerated: track('saveGenerated'),
+      saveToRequisition: track('saveToRequisition'),
       ...over,
     },
   };
@@ -32,11 +33,27 @@ describe('generateGuide', () => {
     const {calls, deps: d} = deps();
     const result = await generateGuide({input, deps: d});
     expect(result).toEqual({status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([9])});
-    expect(calls).toEqual(['savePicks', 'buildDocx', 'upload', 'saveGenerated']);
+    expect(calls).toEqual(['savePicks', 'buildDocx', 'upload', 'saveGenerated', 'saveToRequisition']);
+    expect(d.saveToRequisition).toHaveBeenCalledWith({url: 'https://d/files/new', filename: 'Sr PM - Panel Interview Guide.docx'});
     expect(d.saveGenerated).toHaveBeenCalledWith([
       {id: 'att1', url: 'old', filename: 'old.docx'},
       {url: 'https://d/files/new', filename: 'Sr PM - Panel Interview Guide.docx'},
     ]);
+  });
+
+  it('still reports the guide attached, with a warning, when the requisition can\'t be updated', async () => {
+    const {deps: d} = deps({saveToRequisition: vi.fn(async () => { throw new Error('No permission'); })});
+    const result = await generateGuide({input, deps: d});
+    expect(result).toEqual({
+      status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([9]),
+      warning: "It wasn't added to the requisition's Panel Interview Guide (No permission).",
+    });
+  });
+
+  it('does not touch the requisition when attaching to the guide fails', async () => {
+    const {deps: d} = deps({saveGenerated: vi.fn(async () => { throw new Error('No permission'); })});
+    await generateGuide({input, deps: d});
+    expect(d.saveToRequisition).not.toHaveBeenCalled();
   });
 
   it('returns problems and does nothing when the guide is incomplete', async () => {

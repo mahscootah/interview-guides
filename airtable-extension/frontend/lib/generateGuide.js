@@ -2,8 +2,9 @@ import {findProblems} from './validation.js';
 import {guideFileName} from './fileName.js';
 
 /**
- * Save picks → build .docx → upload → append attachment. If saving picks, uploading or
- * attaching fails, the bytes are returned so the UI can offer a download instead.
+ * Save picks → build .docx → upload → append attachment → add it to the requisition. If saving
+ * picks, uploading or attaching fails, the bytes are returned so the UI can offer a download
+ * instead. A failed requisition update only adds a warning: the guide itself is attached.
  */
 export async function generateGuide({input, deps}) {
   const {header, panelists, selections, existingFiles, generatedAt} = input;
@@ -16,11 +17,17 @@ export async function generateGuide({input, deps}) {
   if (saveError) {
     return {status: 'download', filename, bytes, error: `Your picks were not saved (${saveError.message})`};
   }
+  let url;
   try {
-    const url = await deps.upload(bytes, filename);
+    url = await deps.upload(bytes, filename);
     await deps.saveGenerated([...existingFiles, {url, filename}]);
-    return {status: 'attached', filename, bytes};
   } catch (err) {
     return {status: 'download', filename, bytes, error: err.message};
+  }
+  try {
+    await deps.saveToRequisition({url, filename});
+    return {status: 'attached', filename, bytes};
+  } catch (err) {
+    return {status: 'attached', filename, bytes, warning: `It wasn't added to the requisition's Panel Interview Guide (${err.message}).`};
   }
 }

@@ -1,6 +1,8 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useBase, useRecords, useSearchParams, useSession} from '@airtable/blocks/interface/ui';
-import {TABLES, readRequisition, readGuide, readCompetency, readQuestion, newGuideFields, savePicksFields, generatedFields} from '../lib/airtableData.js';
+import {
+  TABLES, REQ_FIELDS, readRequisition, readGuide, readCompetency, readQuestion, newGuideFields, savePicksFields, generatedFields, requisitionGuideFields,
+} from '../lib/airtableData.js';
 import {createQuestionBank} from '../lib/questionBank.js';
 import {parseSelections, serializeSelections} from '../lib/selections.js';
 import {initialPanelists, formatPanelists} from '../lib/panelists.js';
@@ -8,6 +10,8 @@ import {buildGuideDocx} from '../lib/docBuilder.js';
 import {createFileDropClient} from '../lib/fileDropClient.js';
 import {generateGuide} from '../lib/generateGuide.js';
 import {resolveGuide, NEW_GUIDE_WAIT_MS} from '../lib/guideLookup.js';
+import {replaceGuideFile} from '../lib/requisitionFiles.js';
+import {attachedNotice} from '../lib/notice.js';
 import {FILE_DROP_URL} from '../config.js';
 import {StartScreen} from './StartScreen.jsx';
 import {BuilderScreen} from './BuilderScreen.jsx';
@@ -59,6 +63,7 @@ export function App() {
 
   if (!reqTable) return <MissingSetup what={`the "${TABLES.requisitions}" table`} />;
   if (!guideTable) return <MissingSetup what={`the "${TABLES.guides}" table`} />;
+  if (!reqTable.getFieldByNameIfExists(REQ_FIELDS.guideFiles)) return <MissingSetup what={`the "${REQ_FIELDS.guideFiles}" field`} />;
   if (!competencyTable) return <MissingSetup what={`the "${TABLES.competencies}" table`} />;
   if (!questionTable) return <MissingSetup what={`the "${TABLES.questions}" table`} />;
   if (competencyRecords && questionRecords && bank.questionCount === 0) return <MissingSetup what="any active interview questions" />;
@@ -93,6 +98,8 @@ export function App() {
       buildDocx: (args) => buildGuideDocx({...args, groupOf: bank.groupOf}),
       upload: fileDrop.upload,
       saveGenerated: (files) => guideTable.updateRecordAsync(guide.id, generatedFields({files, userId: session.currentUser.id, at: new Date()})),
+      saveToRequisition: (file) => reqTable.updateRecordAsync(requisition.id,
+        requisitionGuideFields(replaceGuideFile(requisition.guideFiles, file, {positionTitle: requisition.positionTitle, round: guide.round}))),
     },
   });
 
@@ -100,7 +107,7 @@ export function App() {
     <BuilderScreen key={guide.id} requisition={requisition} guide={guide}
       initialPanelists={initialPanelists(guide.panelistsText, requisition.panelistCount)}
       initialSelections={selections} warning={warning} bank={bank} onBack={backToStart} onSave={savePicks} onGenerate={onGenerate}
-      onAttached={(download) => { setNotice({text: `Guide attached to "${guide.name}" ✓`, tone: 'ok', download}); backToStart(); }} />
+      onAttached={(outcome) => { setNotice(attachedNotice(guide.name, outcome)); backToStart(); }} />
   );
 }
 

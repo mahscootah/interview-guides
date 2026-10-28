@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {
   readRequisition, readGuide, newGuideFields, savePicksFields, generatedFields, ROUNDS,
-  readCompetency, readQuestion,
+  readCompetency, readQuestion, requisitionGuideFields,
 } from '../frontend/lib/airtableData.js';
 
 function fakeRecord(id, values, createdTime = new Date('2026-10-01T00:00:00Z')) {
@@ -35,12 +35,22 @@ describe('airtableData', () => {
     const rec = fakeRecord('rec1', {
       'Position Title': 'Sr PM', 'Req #': 'R-100', Brand: {name: 'SOREL'},
       'Hiring Manager': {name: 'Jamie Lee'}, 'Panel Interview Format': {name: 'In-Person'},
-      '#of Panelists': 3,
+      '#of Panelists': 3, 'Panel Interview Guide': [{id: 'att9', url: 'u', filename: 'g.docx'}],
     });
     expect(readRequisition(rec)).toEqual({
       id: 'rec1', positionTitle: 'Sr PM', reqNumber: 'R-100', brand: 'SOREL',
       hiringManager: 'Jamie Lee', format: 'In-Person', panelistCount: 3,
+      guideFiles: [{id: 'att9', url: 'u', filename: 'g.docx'}],
     });
+  });
+
+  it('reads an empty Panel Interview Guide as no files', () => {
+    expect(readRequisition(fakeRecord('rec1', {})).guideFiles).toEqual([]);
+  });
+
+  it('writes requisition guide files to Panel Interview Guide only', () => {
+    const files = [{id: 'att9'}, {url: 'new', filename: 'g.docx'}];
+    expect(requisitionGuideFields(files)).toEqual({'Panel Interview Guide': files});
   });
 
   it('treats a missing panelist count as 0', () => {

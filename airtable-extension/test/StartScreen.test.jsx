@@ -35,6 +35,12 @@ describe('StartScreen', () => {
     vi.unstubAllGlobals();
   });
 
+  it('shows a warning notice in the problem style, still with the download', () => {
+    setup({notice: {text: 'Guide attached, but not to the requisition.', tone: 'problem', download: {filename: 'g.docx', bytes: new Uint8Array([7])}}});
+    expect(screen.getByRole('status').className).toBe('problems');
+    expect(screen.getByRole('button', {name: 'Download g.docx'})).toBeTruthy();
+  });
+
   it('shows no download button on a notice without a file', () => {
     setup({notice: {text: 'That guide no longer exists.', tone: 'problem'}});
     expect(screen.queryByRole('button', {name: /^Download/})).toBeNull();

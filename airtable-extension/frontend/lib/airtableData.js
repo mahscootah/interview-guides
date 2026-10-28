@@ -15,6 +15,7 @@ export const REQ_FIELDS = {
   hiringManager: 'Hiring Manager',
   format: 'Panel Interview Format',
   panelistCount: '#of Panelists',
+  guideFiles: 'Panel Interview Guide',
 };
 
 export const GUIDE_FIELDS = {
@@ -40,6 +41,7 @@ export function readRequisition(record) {
     hiringManager: text(REQ_FIELDS.hiringManager),
     format: text(REQ_FIELDS.format),
     panelistCount: Number(record.getCellValue(REQ_FIELDS.panelistCount)) || 0,
+    guideFiles: record.getCellValue(REQ_FIELDS.guideFiles) ?? [],
   };
 }
 
@@ -96,4 +98,8 @@ export function generatedFields({files, userId, at}) {
     [GUIDE_FIELDS.lastGenerated]: at.toISOString(),
     [GUIDE_FIELDS.generatedBy]: {id: userId},
   };
+}
+
+export function requisitionGuideFields(files) {
+  return {[REQ_FIELDS.guideFiles]: files};
 }
