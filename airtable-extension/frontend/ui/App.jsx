@@ -100,7 +100,7 @@ export function App() {
     <BuilderScreen key={guide.id} requisition={requisition} guide={guide}
       initialPanelists={initialPanelists(guide.panelistsText, requisition.panelistCount)}
       initialSelections={selections} warning={warning} bank={bank} onBack={backToStart} onSave={savePicks} onGenerate={onGenerate}
-      onAttached={() => { setNotice({text: `Guide attached to "${guide.name}" ✓`, tone: 'ok'}); backToStart(); }} />
+      onAttached={(download) => { setNotice({text: `Guide attached to "${guide.name}" ✓`, tone: 'ok', download}); backToStart(); }} />
   );
 }
 

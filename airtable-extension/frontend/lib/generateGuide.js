@@ -19,7 +19,7 @@ export async function generateGuide({input, deps}) {
   try {
     const url = await deps.upload(bytes, filename);
     await deps.saveGenerated([...existingFiles, {url, filename}]);
-    return {status: 'attached', filename};
+    return {status: 'attached', filename, bytes};
   } catch (err) {
     return {status: 'download', filename, bytes, error: err.message};
   }

@@ -9,6 +9,7 @@ import {PanelistsEditor} from './PanelistsEditor.jsx';
 import {CompetencyPicker} from './CompetencyPicker.jsx';
 import {QuestionPicker} from './QuestionPicker.jsx';
 import {GenerateBar} from './GenerateBar.jsx';
+import {GuideFiles} from './GuideFiles.jsx';
 
 function BrandLine({requisition, selections, onOverride}) {
   const mapped = mapBrand(requisition.brand);
@@ -59,7 +60,7 @@ export function BuilderScreen({requisition, guide, initialPanelists, initialSele
       setResult(outcome);
       if (outcome.status === 'attached') {
         setChanged(false);
-        onAttached?.(outcome.filename);
+        onAttached?.({filename: outcome.filename, bytes: outcome.bytes});
       }
     } catch (err) {
       setResult({status: 'download', filename: '', bytes: null, error: err.message});
@@ -80,6 +81,7 @@ export function BuilderScreen({requisition, guide, initialPanelists, initialSele
         <div className="muted">Req # {requisition.reqNumber} · {guide.round} · {requisition.format} · Hiring manager: {requisition.hiringManager}</div>
         <div>Brand: <BrandLine requisition={requisition} selections={selections} onOverride={edit(setBrandOverride)} /></div>
       </section>
+      <GuideFiles files={guide.files} />
       <PanelistsEditor panelists={panelists} onChange={(next) => { setResult(null); setChanged(true); setPanelists(next); }} />
       <CompetencyPicker bank={bank} selections={selections} onToggle={edit(toggleCompetency)} />
       <QuestionPicker bank={bank} selections={selections} panelists={panelists}

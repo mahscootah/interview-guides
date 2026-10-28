@@ -22,6 +22,24 @@ function setup(props = {}) {
 }
 
 describe('StartScreen', () => {
+  it('offers the just-attached guide as a download in the success notice', () => {
+    const createObjectURL = vi.fn(() => 'blob:guide');
+    vi.stubGlobal('URL', {...URL, createObjectURL, revokeObjectURL: vi.fn()});
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const bytes = new Uint8Array([7]);
+    setup({notice: {text: 'Guide attached to "Sr PM – Panel" ✓', tone: 'ok', download: {filename: 'g.docx', bytes}}});
+    fireEvent.click(screen.getByRole('button', {name: 'Download g.docx'}));
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(click).toHaveBeenCalledTimes(1);
+    click.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
+  it('shows no download button on a notice without a file', () => {
+    setup({notice: {text: 'That guide no longer exists.', tone: 'problem'}});
+    expect(screen.queryByRole('button', {name: /^Download/})).toBeNull();
+  });
+
   it('shows New Guide first with the requisition search focused', () => {
     setup();
     const headings = screen.getAllByRole('heading').map((h) => h.textContent);

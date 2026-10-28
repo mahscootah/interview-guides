@@ -12,7 +12,7 @@ const requisition = {id: 'rec1', positionTitle: 'Sr PM', reqNumber: 'R-1', brand
 const guide = {id: 'g1', name: 'Sr PM – Panel', round: 'Panel'};
 
 function setup(props = {}) {
-  const onGenerate = vi.fn(async () => ({status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx'}));
+  const onGenerate = vi.fn(async () => ({status: 'attached', filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([7])}));
   const onBack = vi.fn();
   const onSave = vi.fn(async () => {});
   const onAttached = vi.fn();
@@ -91,7 +91,26 @@ describe('BuilderScreen', () => {
     const {onAttached} = setup();
     fillMinimalGuide();
     fireEvent.click(screen.getByRole('button', {name: 'Generate guide'}));
-    await waitFor(() => expect(onAttached).toHaveBeenCalledWith('Sr PM - Panel Interview Guide.docx'));
+    await waitFor(() => expect(onAttached).toHaveBeenCalledWith({filename: 'Sr PM - Panel Interview Guide.docx', bytes: new Uint8Array([7])}));
+  });
+
+  it('lists the attached guide files newest first, each opening in a new tab', () => {
+    const files = [
+      {id: 'att1', url: 'https://files/one', filename: 'Sr PM - Panel Interview Guide 2026-10-15 9.41 AM.docx'},
+      {id: 'att2', url: 'https://files/two', filename: 'Sr PM - Panel Interview Guide 2026-10-28 1.05 PM.docx'},
+    ];
+    setup({guide: {...guide, files}});
+    const links = screen.getAllByRole('link');
+    expect(links.map((a) => a.textContent)).toEqual([files[1].filename, files[0].filename]);
+    expect(links[0].getAttribute('href')).toBe('https://files/two');
+    expect(links[0].getAttribute('target')).toBe('_blank');
+    expect(links[0].getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('says when no guide file has been generated yet', () => {
+    setup({guide: {...guide, files: []}});
+    expect(screen.getByText('No guide generated yet.')).toBeTruthy();
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
   });
 
   it('flags a competency whose panelist was removed', () => {

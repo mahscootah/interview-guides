@@ -1,11 +1,5 @@
 import React from 'react';
-
-function downloadBytes(bytes, filename) {
-  const url = URL.createObjectURL(new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}));
-  const a = Object.assign(document.createElement('a'), {href: url, download: filename});
-  a.click();
-  URL.revokeObjectURL(url);
-}
+import {downloadBytes} from '../lib/download.js';
 
 export function GenerateBar({problems, busy, result, onGenerate, onCopy}) {
   return (
