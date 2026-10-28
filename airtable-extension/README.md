@@ -38,7 +38,11 @@ The extension sees only what its page's properties panel shows it. On the Custom
 3. **User actions:** turn on **Edit records inline** and **Add records inline** for
    Interview Guides, and **Edit records inline** (not Add) for Master Tracker - All TA.
    Leave both off for Competencies and Interview Questions so the question bank stays
-   read-only from the page.
+   read-only from the page. Each toggle has a gear that picks its tables; turning the
+   toggle on isn't enough. If Master Tracker is missing from the Edit gear, Generate
+   attaches the guide but warns that "Master Tracker - All TA is not set to allow record
+   editing".
+4. **Publish** the Interface. Page settings, like releases, only reach users after a publish.
 
 Don't filter the Interview Guides data on this page. The extension looks up a guide it
 just created, and a filter that hides it shows "That guide no longer exists."
