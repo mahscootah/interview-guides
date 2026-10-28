@@ -73,7 +73,11 @@ block release                 # sandbox (remote in .block/remote.json)
 block release --remote live   # TA Airtable - Live, once that remote is added
 ```
 
-A released build runs for everyone on the page with Develop off.
+A released build runs for everyone on the page with Develop off, but only after the
+Interface is published again. The page keeps the release it had at the last publish,
+and a new release alone doesn't count as an unpublished change. So after `block release`,
+open the Interface editor, make a small change on the page so **Publish** turns on,
+publish, then undo the change and publish again.
 
 - SDK pinned to `@airtable/blocks@0.0.0-experimental-3c2a2d775-20260807` (pre-release),
   React 19.3.0. Upgrading is a deliberate task: re-run the sandbox checks in
