@@ -116,6 +116,18 @@ describe('StartScreen', () => {
     expect(buttons[1].textContent).not.toContain('Yours');
   });
 
+  it('explains how the builder works, open by default and collapsible', () => {
+    setup();
+    const help = screen.getByText('How the Guide Builder works').closest('details');
+    expect(help.open).toBe(true);
+    const steps = [...help.querySelectorAll('ol > li')].map((li) => li.textContent);
+    expect(steps).toHaveLength(5);
+    expect(steps[0]).toMatch(/Find the requisition/);
+    expect(steps[4]).toMatch(/Panel Interview Guide/);
+    expect(help.textContent).toMatch(/Back to guides/);
+    expect(help.textContent).toMatch(/uploaded by hand are never removed/);
+  });
+
   it('says so when no requisition matches', () => {
     setup();
     fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'zzz'}});

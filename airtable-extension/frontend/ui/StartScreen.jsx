@@ -1,6 +1,7 @@
 import React from 'react';
 import {NewGuidePanel} from './NewGuidePanel.jsx';
 import {RecentGuides} from './RecentGuides.jsx';
+import {HowItWorks} from './HowItWorks.jsx';
 import {downloadBytes} from '../lib/download.js';
 
 export function StartScreen({requisitions, guides, notice, currentUserId, onCreate, onOpen}) {
@@ -17,6 +18,7 @@ export function StartScreen({requisitions, guides, notice, currentUserId, onCrea
         </div>
       )}
       <NewGuidePanel requisitions={requisitions} currentUserId={currentUserId} onCreate={onCreate} />
+      <HowItWorks />
       <RecentGuides guides={guides} onOpen={onOpen} />
     </div>
   );

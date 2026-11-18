@@ -14,5 +14,11 @@ export const CSS = `
 .gb .muted { color: #6B7280; font-size: 13px; }
 .gb .problems { color: #B42318; font-size: 13px; }
 .gb .ok { color: #067647; font-weight: 600; }
+.gb .columns { column-count: 2; column-gap: 24px; }
+.gb .columns label { break-inside: avoid; margin-top: 0; }
+@media (max-width: 480px) { .gb .columns { column-count: 1; } }
+.gb .help summary { font-size: 16px; font-weight: 600; cursor: pointer; }
+.gb .help ol, .gb .help ul { margin: 8px 0; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.gb .help li { margin: 4px 0; }
 .gb .row { display: flex; gap: 8px; align-items: center; }
 `;
