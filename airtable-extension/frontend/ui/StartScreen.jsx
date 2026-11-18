@@ -3,7 +3,7 @@ import {NewGuidePanel} from './NewGuidePanel.jsx';
 import {RecentGuides} from './RecentGuides.jsx';
 import {downloadBytes} from '../lib/download.js';
 
-export function StartScreen({requisitions, guides, notice, onCreate, onOpen}) {
+export function StartScreen({requisitions, guides, notice, currentUserId, onCreate, onOpen}) {
   return (
     <div>
       {notice && (
@@ -16,7 +16,7 @@ export function StartScreen({requisitions, guides, notice, onCreate, onOpen}) {
           )}
         </div>
       )}
-      <NewGuidePanel requisitions={requisitions} onCreate={onCreate} />
+      <NewGuidePanel requisitions={requisitions} currentUserId={currentUserId} onCreate={onCreate} />
       <RecentGuides guides={guides} onOpen={onOpen} />
     </div>
   );

@@ -63,7 +63,9 @@ export function App() {
 
   if (!reqTable) return <MissingSetup what={`the "${TABLES.requisitions}" table`} />;
   if (!guideTable) return <MissingSetup what={`the "${TABLES.guides}" table`} />;
-  if (!reqTable.getFieldByNameIfExists(REQ_FIELDS.guideFiles)) return <MissingSetup what={`the "${REQ_FIELDS.guideFiles}" field`} />;
+  const missingReqField = [REQ_FIELDS.guideFiles, REQ_FIELDS.recruiter, REQ_FIELDS.ces, REQ_FIELDS.status]
+    .find((name) => !reqTable.getFieldByNameIfExists(name));
+  if (missingReqField) return <MissingSetup what={`the "${missingReqField}" field`} />;
   if (!competencyTable) return <MissingSetup what={`the "${TABLES.competencies}" table`} />;
   if (!questionTable) return <MissingSetup what={`the "${TABLES.questions}" table`} />;
   if (competencyRecords && questionRecords && bank.questionCount === 0) return <MissingSetup what="any active interview questions" />;
@@ -82,7 +84,8 @@ export function App() {
     return <p className="muted" role="status">Opening the guide…</p>;
   }
   if (!guide) {
-    return <StartScreen requisitions={requisitions} guides={guideRows} notice={notice} onCreate={createGuide} onOpen={openGuide} />;
+    return <StartScreen requisitions={requisitions} guides={guideRows} notice={notice}
+      currentUserId={session.currentUser?.id ?? null} onCreate={createGuide} onOpen={openGuide} />;
   }
 
   const requisition = reqById.get(guide.requisitionId);

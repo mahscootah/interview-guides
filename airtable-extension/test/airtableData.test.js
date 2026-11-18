@@ -36,12 +36,19 @@ describe('airtableData', () => {
       'Position Title': 'Sr PM', 'Req #': 'R-100', Brand: {name: 'SOREL'},
       'Hiring Manager': {name: 'Jamie Lee'}, 'Panel Interview Format': {name: 'In-Person'},
       '#of Panelists': 3, 'Panel Interview Guide': [{id: 'att9', url: 'u', filename: 'g.docx'}],
+      Recruiter: {id: 'usrR', name: ' Pat Recruiter ', email: 'r@x.com'}, CES: {id: 'usrC', name: 'Casey CES'},
+      'Requisition Status': {name: 'Open'},
     });
     expect(readRequisition(rec)).toEqual({
       id: 'rec1', positionTitle: 'Sr PM', reqNumber: 'R-100', brand: 'SOREL',
       hiringManager: 'Jamie Lee', format: 'In-Person', panelistCount: 3,
       guideFiles: [{id: 'att9', url: 'u', filename: 'g.docx'}],
+      recruiter: 'Pat Recruiter', recruiterId: 'usrR', cesId: 'usrC', status: 'Open',
     });
+  });
+
+  it('reads a requisition with no recruiter, CES or status', () => {
+    expect(readRequisition(fakeRecord('rec1', {}))).toMatchObject({recruiter: '', recruiterId: null, cesId: null, status: ''});
   });
 
   it('reads an empty Panel Interview Guide as no files', () => {

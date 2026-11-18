@@ -16,6 +16,9 @@ export const REQ_FIELDS = {
   format: 'Panel Interview Format',
   panelistCount: '#of Panelists',
   guideFiles: 'Panel Interview Guide',
+  recruiter: 'Recruiter',
+  ces: 'CES',
+  status: 'Requisition Status',
 };
 
 export const GUIDE_FIELDS = {
@@ -42,6 +45,10 @@ export function readRequisition(record) {
     format: text(REQ_FIELDS.format),
     panelistCount: Number(record.getCellValue(REQ_FIELDS.panelistCount)) || 0,
     guideFiles: record.getCellValue(REQ_FIELDS.guideFiles) ?? [],
+    recruiter: (record.getCellValue(REQ_FIELDS.recruiter)?.name ?? '').trim(),
+    recruiterId: record.getCellValue(REQ_FIELDS.recruiter)?.id ?? null,
+    cesId: record.getCellValue(REQ_FIELDS.ces)?.id ?? null,
+    status: text(REQ_FIELDS.status),
   };
 }
 

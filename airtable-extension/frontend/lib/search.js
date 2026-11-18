@@ -1,11 +1,23 @@
 const norm = (value) => (value ?? '').toString().toLowerCase().trim();
 
-export function filterRequisitions(reqs, query, limit = 20) {
+export const OPEN_STATUS = 'Open';
+
+// 0 = open and mine (recruiter or CES), 1 = other open, 2 = everything else.
+function rank(req, userId) {
+  if (req.status !== OPEN_STATUS) return 2;
+  const mine = Boolean(userId) && (req.recruiterId === userId || req.cesId === userId);
+  return mine ? 0 : 1;
+}
+
+export function filterRequisitions(reqs, query, {userId = null, limit = 20} = {}) {
   const q = norm(query);
   if (!q) return [];
   return reqs
     .filter((r) => norm(r.positionTitle).includes(q) || norm(r.reqNumber).includes(q))
-    .slice(0, limit);
+    .map((r, index) => ({req: r, index, tier: rank(r, userId)}))
+    .sort((a, b) => a.tier - b.tier || a.index - b.index)
+    .slice(0, limit)
+    .map(({req, tier}) => ({...req, isMine: tier === 0}));
 }
 
 export function filterGuides(guides, query) {

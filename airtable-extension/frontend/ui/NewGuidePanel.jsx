@@ -3,7 +3,16 @@ import {filterRequisitions} from '../lib/search.js';
 import {defaultGuideName} from '../lib/fileName.js';
 import {ROUNDS} from '../lib/airtableData.js';
 
-export function NewGuidePanel({requisitions, onCreate}) {
+function ReqLabel({req}) {
+  return (
+    <>
+      {req.positionTitle || '(no title)'} <span className="muted">{req.reqNumber}</span>
+      {req.recruiter && <span className="muted"> · Recruiter: {req.recruiter}</span>}
+    </>
+  );
+}
+
+export function NewGuidePanel({requisitions, currentUserId, onCreate}) {
   const [query, setQuery] = useState('');
   const [picked, setPicked] = useState(null);
   const [round, setRound] = useState(ROUNDS[0]);
@@ -11,7 +20,7 @@ export function NewGuidePanel({requisitions, onCreate}) {
   const [nameEdited, setNameEdited] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
-  const matches = filterRequisitions(requisitions, query);
+  const matches = filterRequisitions(requisitions, query, {userId: currentUserId});
 
   const pick = (req) => {
     setPicked(req);
@@ -45,7 +54,8 @@ export function NewGuidePanel({requisitions, onCreate}) {
           <div className="list">
             {matches.map((r) => (
               <button key={r.id} type="button" onClick={() => pick(r)}>
-                {r.positionTitle || '(no title)'} <span className="muted">{r.reqNumber}</span>
+                <ReqLabel req={r} />
+                {r.isMine && <span className="tag">Yours</span>}
               </button>
             ))}
           </div>
@@ -53,7 +63,8 @@ export function NewGuidePanel({requisitions, onCreate}) {
       )}
       {picked && (
         <p className="picked">
-          <strong>{picked.positionTitle || '(no title)'}</strong> <span className="muted">{picked.reqNumber}</span>{' '}
+          <strong>{picked.positionTitle || '(no title)'}</strong> <span className="muted">{picked.reqNumber}</span>
+          {picked.recruiter && <span className="muted"> · Recruiter: {picked.recruiter}</span>}{' '}
           <button type="button" onClick={() => setPicked(null)}>Change</button>
         </p>
       )}

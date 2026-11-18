@@ -10,6 +10,7 @@ export const CSS = `
 .gb button.go { background: #E05C2A; border-color: #E05C2A; color: #fff; font-weight: 600; }
 .gb button:disabled { opacity: .5; cursor: not-allowed; }
 .gb .list button { display: block; width: 100%; text-align: left; margin: 4px 0; }
+.gb .tag { margin-left: 8px; padding: 1px 6px; border-radius: 8px; background: #DBEAFE; color: #1E3A8A; font-size: 12px; }
 .gb .muted { color: #6B7280; font-size: 13px; }
 .gb .problems { color: #B42318; font-size: 13px; }
 .gb .ok { color: #067647; font-weight: 600; }

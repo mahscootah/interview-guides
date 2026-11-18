@@ -92,6 +92,30 @@ describe('StartScreen', () => {
     expect(screen.getByRole('button', {name: /Senior Product Manager/})).toBeTruthy();
   });
 
+  it('shows the recruiter next to the Req # in the match list and on the picked requisition', () => {
+    const reqs = [{...requisitions[1], recruiter: 'Pat Recruiter', status: 'Open', recruiterId: 'usrR', cesId: null}];
+    setup({requisitions: reqs});
+    fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'store'}});
+    const match = screen.getByRole('button', {name: /^Store Manager R-2002/});
+    expect(match.textContent).toContain('Recruiter: Pat Recruiter');
+    fireEvent.click(match);
+    expect(screen.getByText(/Recruiter: Pat Recruiter/)).toBeTruthy();
+  });
+
+  it("lists the current user's open requisitions first and marks them", () => {
+    const reqs = [
+      {...requisitions[0], status: 'Open', recruiterId: 'usrX', cesId: null, recruiter: 'Someone'},
+      {...requisitions[1], status: 'Open', recruiterId: 'usrX', cesId: 'usrMe', recruiter: 'Someone'},
+    ];
+    setup({requisitions: reqs, currentUserId: 'usrMe'});
+    fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'manager'}});
+    const panel = screen.getByRole('heading', {name: 'New guide'}).closest('section');
+    const buttons = [...panel.querySelectorAll('.list button')];
+    expect(buttons.map((b) => b.textContent.startsWith('Store Manager'))).toEqual([true, false]);
+    expect(buttons[0].textContent).toContain('Yours');
+    expect(buttons[1].textContent).not.toContain('Yours');
+  });
+
   it('says so when no requisition matches', () => {
     setup();
     fireEvent.change(screen.getByLabelText('Find requisition'), {target: {value: 'zzz'}});
