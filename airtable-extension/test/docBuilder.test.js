@@ -40,11 +40,10 @@ describe('buildGuideDocx', () => {
     expect(Object.keys(zip.files).some((f) => f.startsWith('word/media/'))).toBe(true);
   });
 
-  it('includes title, meta line, facilitator, panelists and blank candidate line', async () => {
+  it('includes title, meta line, facilitator and panelists', async () => {
     const text = decode(textOf((await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf}))).xml));
     expect(text).toContain('INTERVIEW GUIDE – SR PRODUCT MANAGER');
     expect(text).toContain('Req # R-1001 · Panel · Virtual (Microsoft Teams)');
-    expect(text).toContain('Candidate: ____________________');
     expect(text).toContain('Ana — you have been selected as a facilitator.');
     expect(text).toContain('Interviewers: Ana, Ben');
   });
@@ -86,8 +85,25 @@ describe('buildGuideDocx', () => {
     const items = [...lists[0].getElementsByTagName('w:listItem')].map((n) => n.getAttribute('w:displayText'));
     expect(items).toEqual(['1 – Emerging', '2 – Skilled', '3 – Highly Skilled', '4 – Advanced']);
     const ids = [...parsed.getElementsByTagName('w:sdtPr')].map((n) => n.getElementsByTagName('w:id')[0].getAttribute('w:val'));
-    expect(new Set(ids).size).toBe(3);
+    expect(new Set(ids).size).toBe(ids.length);
     const text = decode(textOf(xml));
     expect(text.match(/Score: Choose a score/g)).toHaveLength(3);
+  });
+  it('makes Candidate a text box and Date a date picker', async () => {
+    const {xml} = await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf}));
+    const parsed = new new JSDOM('').window.DOMParser().parseFromString(xml, 'application/xml');
+    expect(parsed.getElementsByTagName('parsererror')).toHaveLength(0);
+    const byTag = (tag) => [...parsed.getElementsByTagName('w:sdt')]
+      .find((n) => n.getElementsByTagName('w:tag')[0].getAttribute('w:val') === tag);
+    const candidate = byTag('Candidate');
+    expect(candidate.getElementsByTagName('w:text')).toHaveLength(1);
+    expect(candidate.getElementsByTagName('w:sdtContent')[0].textContent).toBe('Enter candidate name');
+    const date = byTag('Date');
+    const picker = date.getElementsByTagName('w:date')[0];
+    expect(picker.getElementsByTagName('w:dateFormat')[0].getAttribute('w:val')).toBe('M/d/yyyy');
+    expect(date.getElementsByTagName('w:sdtContent')[0].textContent).toBe('Choose a date');
+    const ids = [...parsed.getElementsByTagName('w:sdtPr')].map((n) => n.getElementsByTagName('w:id')[0].getAttribute('w:val'));
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(decode(textOf(xml))).not.toContain('____');
   });
 });

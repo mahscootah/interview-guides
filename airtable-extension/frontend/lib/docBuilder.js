@@ -5,7 +5,7 @@ import {
 import {LOGOS} from './data/logos.data.js';
 import {LEADERSHIP_GROUP} from './questionBank.js';
 import {
-  para, emptyPara, headerPara, bullet, cell, dropDown, noBorder, cellBorder, NAVY, ORANGE, GREY_TEXT,
+  para, emptyPara, headerPara, bullet, cell, dropDown, textBox, datePicker, noBorder, cellBorder, NAVY, ORANGE, GREY_TEXT,
 } from './docParts.js';
 
 const COLS = [2000, 1800, 3360, 2200]; // competency | panelist | question | notes = 9360
@@ -17,6 +17,8 @@ const SCORE_DEFS = [
 ];
 const SCORE_CHOICES = SCORE_DEFS.map(([n, label]) => `${n} – ${label}`);
 const SCORE_ID_BASE = 1000;
+const CANDIDATE_ID = 1;
+const DATE_ID = 2;
 const AGENDA = [
   ['Introductions (5 min)', 'Get settled, introduce yourself, and explain the flow of the interview.'],
   ['Interview Questions', 'Ask questions assigned below to ensure consistency and eliminate potential for bias or duplicative questions. You may ask follow-up questions as needed.'],
@@ -115,6 +117,16 @@ function notesTable() {
   });
 }
 
+function candidateLine() {
+  const label = (text) => new TextRun({text, font: 'Arial', size: 18, bold: true});
+  return new Paragraph({children: [
+    label('Candidate: '),
+    textBox({id: CANDIDATE_ID, tag: 'Candidate', placeholder: 'Enter candidate name'}),
+    label('\tDate: '),
+    datePicker({id: DATE_ID, tag: 'Date', placeholder: 'Choose a date'}),
+  ], tabStops: [{type: TabStopType.LEFT, position: 5400}], spacing: {after: 200}});
+}
+
 function bodyChildren({header, panelists, selections, groupOf}) {
   const named = panelists.map((p) => p.trim()).filter(Boolean);
   const facilitator = named[0] || header.hiringManager;
@@ -127,7 +139,7 @@ function bodyChildren({header, panelists, selections, groupOf}) {
       border: {bottom: {style: BorderStyle.SINGLE, size: 8, color: ORANGE, space: 2}},
     }),
     para(meta, {size: 18, color: GREY_TEXT, before: 80, after: 80}),
-    para('Candidate: ____________________     Date: ______________', {size: 18, color: GREY_TEXT, after: 200}),
+    candidateLine(),
     headerPara('Agenda'),
     new Paragraph({children: [
       new TextRun({text: facilitator, font: 'Arial', size: 20, bold: true}),

@@ -58,22 +58,37 @@ export function cell(children, opts = {}) {
 
 const val = (name, value) => new BuilderElement({name, attributes: {val: {key: 'w:val', value}}});
 
-/**
- * An inline Word drop-down (content control) that shows `placeholder` until the reader picks an item.
- * `id` must be unique within the document.
- */
-export function dropDown({id, tag, placeholder, items, size = 18}) {
-  const listItems = items.map((text) => new BuilderElement({
-    name: 'w:listItem',
-    attributes: {displayText: {key: 'w:displayText', value: text}, value: {key: 'w:value', value: text}},
-  }));
+/** An inline Word content control showing grey `placeholder` text until filled. `id` must be unique in the document. */
+function contentControl({id, tag, placeholder, kind, size = 18}) {
   const properties = new BuilderElement({name: 'w:sdtPr', children: [
     val('w:alias', tag), val('w:tag', tag), val('w:id', id),
     new BuilderElement({name: 'w:showingPlcHdr'}),
-    new BuilderElement({name: 'w:dropDownList', children: listItems}),
+    kind,
   ]});
   const content = new BuilderElement({name: 'w:sdtContent', children: [
     new TextRun({text: placeholder, font: 'Arial', size, color: GREY_TEXT}),
   ]});
   return new BuilderElement({name: 'w:sdt', children: [properties, content]});
+}
+
+/** A drop-down that lets the reader pick one of `items`. */
+export function dropDown({items, ...opts}) {
+  const listItems = items.map((text) => new BuilderElement({
+    name: 'w:listItem',
+    attributes: {displayText: {key: 'w:displayText', value: text}, value: {key: 'w:value', value: text}},
+  }));
+  return contentControl({...opts, kind: new BuilderElement({name: 'w:dropDownList', children: listItems})});
+}
+
+/** A plain-text box. */
+export function textBox(opts) {
+  return contentControl({...opts, kind: new BuilderElement({name: 'w:text'})});
+}
+
+/** A date picker (US format, e.g. 11/19/2026). */
+export function datePicker(opts) {
+  return contentControl({...opts, kind: new BuilderElement({name: 'w:date', children: [
+    val('w:dateFormat', 'M/d/yyyy'), val('w:lid', 'en-US'),
+    val('w:storeMappedDataAs', 'dateTime'), val('w:calendar', 'gregorian'),
+  ]})});
 }
