@@ -77,4 +77,17 @@ describe('buildGuideDocx', () => {
     expect(parsed.getElementsByTagName('parsererror')).toHaveLength(0);
     expect(decode(textOf(xml))).toContain('Line one line two');
   });
+  it('adds a score drop-down (Word content control) under every question', async () => {
+    const {xml} = await documentXml(await buildGuideDocx({header, panelists: ['Ana', 'Ben'], selections, groupOf: bank.groupOf}));
+    const parsed = new new JSDOM('').window.DOMParser().parseFromString(xml, 'application/xml');
+    expect(parsed.getElementsByTagName('parsererror')).toHaveLength(0);
+    const lists = [...parsed.getElementsByTagName('w:dropDownList')];
+    expect(lists).toHaveLength(3);
+    const items = [...lists[0].getElementsByTagName('w:listItem')].map((n) => n.getAttribute('w:displayText'));
+    expect(items).toEqual(['1 – Emerging', '2 – Skilled', '3 – Highly Skilled', '4 – Advanced']);
+    const ids = [...parsed.getElementsByTagName('w:sdtPr')].map((n) => n.getElementsByTagName('w:id')[0].getAttribute('w:val'));
+    expect(new Set(ids).size).toBe(3);
+    const text = decode(textOf(xml));
+    expect(text.match(/Score: Choose a score/g)).toHaveLength(3);
+  });
 });

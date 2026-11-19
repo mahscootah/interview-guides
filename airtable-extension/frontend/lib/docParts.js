@@ -1,5 +1,6 @@
 import {
   Paragraph, TextRun, TableCell, AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
+  BuilderElement,
 } from 'docx';
 
 export const NAVY = '1A1A2E';
@@ -53,4 +54,26 @@ export function cell(children, opts = {}) {
     columnSpan: opts.span || 1,
     margins: opts.margins || {top: 120, bottom: 120, left: 120, right: 120},
   });
+}
+
+const val = (name, value) => new BuilderElement({name, attributes: {val: {key: 'w:val', value}}});
+
+/**
+ * An inline Word drop-down (content control) that shows `placeholder` until the reader picks an item.
+ * `id` must be unique within the document.
+ */
+export function dropDown({id, tag, placeholder, items, size = 18}) {
+  const listItems = items.map((text) => new BuilderElement({
+    name: 'w:listItem',
+    attributes: {displayText: {key: 'w:displayText', value: text}, value: {key: 'w:value', value: text}},
+  }));
+  const properties = new BuilderElement({name: 'w:sdtPr', children: [
+    val('w:alias', tag), val('w:tag', tag), val('w:id', id),
+    new BuilderElement({name: 'w:showingPlcHdr'}),
+    new BuilderElement({name: 'w:dropDownList', children: listItems}),
+  ]});
+  const content = new BuilderElement({name: 'w:sdtContent', children: [
+    new TextRun({text: placeholder, font: 'Arial', size, color: GREY_TEXT}),
+  ]});
+  return new BuilderElement({name: 'w:sdt', children: [properties, content]});
 }

@@ -5,17 +5,18 @@ import {
 import {LOGOS} from './data/logos.data.js';
 import {LEADERSHIP_GROUP} from './questionBank.js';
 import {
-  para, emptyPara, headerPara, bullet, cell, noBorder, cellBorder, NAVY, ORANGE, GREY_TEXT,
+  para, emptyPara, headerPara, bullet, cell, dropDown, noBorder, cellBorder, NAVY, ORANGE, GREY_TEXT,
 } from './docParts.js';
 
 const COLS = [2000, 1800, 3360, 2200]; // competency | panelist | question | notes = 9360
-const SCORE_LINE = '  1 – Emerging    2 – Skilled    3 – Highly Skilled    4 – Advanced';
 const SCORE_DEFS = [
   ['1', 'Emerging', 'The candidate is actively building the skill and beginning to practice behaviors on the job.'],
   ['2', 'Skilled', 'The candidate has the basics down and consistently demonstrates the skills and behaviors required for the role.'],
   ['3', 'Highly Skilled', 'Candidate has skills beyond what is expected of the role, consistently role models behaviors, and coaches others to increase their capability level.'],
   ['4', 'Advanced', 'Candidate broadly applies skills beyond the role to improve business functions and achieve enterprise results.'],
 ];
+const SCORE_CHOICES = SCORE_DEFS.map(([n, label]) => `${n} – ${label}`);
+const SCORE_ID_BASE = 1000;
 const AGENDA = [
   ['Introductions (5 min)', 'Get settled, introduce yourself, and explain the flow of the interview.'],
   ['Interview Questions', 'Ask questions assigned below to ensure consistency and eliminate potential for bias or duplicative questions. You may ask follow-up questions as needed.'],
@@ -74,7 +75,7 @@ function scoreTable() {
   });
 }
 
-function questionRows(competency, question, shade, groupOf) {
+function questionRows(competency, question, shade, groupOf, index) {
   const isLeadership = groupOf(competency.name) === LEADERSHIP_GROUP;
   const compCell = cell([
     para(competency.name, {bold: true, after: 60}),
@@ -88,7 +89,7 @@ function questionRows(competency, question, shade, groupOf) {
   ]});
   const score = new TableRow({children: [cell([new Paragraph({children: [
     new TextRun({text: 'Score: ', font: 'Arial', size: 18, bold: true}),
-    new TextRun({text: SCORE_LINE, font: 'Arial', size: 18, color: GREY_TEXT}),
+    dropDown({id: SCORE_ID_BASE + index, tag: 'Score', placeholder: 'Choose a score', items: SCORE_CHOICES}),
   ]})], {span: 4, shade: 'F3F4F6', borders: {top: noBorder, bottom: cellBorder, left: cellBorder, right: cellBorder}, margins: {top: 80, bottom: 80, left: 120, right: 120}})]});
   return [row, score];
 }
@@ -98,7 +99,7 @@ function questionsTable(selections, groupOf) {
     cell([para(label, {bold: true, color: 'FFFFFF', size: 18})], {shade: NAVY, width: COLS[i]}))});
   const pairs = selections.competencies.flatMap((c) =>
     [...c.questions, ...c.customQuestions].map((q) => [c, q]));
-  const body = pairs.flatMap(([c, q], i) => questionRows(c, q, i % 2 === 0 ? 'F9FAFB' : 'FFFFFF', groupOf));
+  const body = pairs.flatMap(([c, q], i) => questionRows(c, q, i % 2 === 0 ? 'F9FAFB' : 'FFFFFF', groupOf, i));
   return new Table({width: {size: 9360, type: WidthType.DXA}, columnWidths: COLS, rows: [headRow, ...body]});
 }
 
